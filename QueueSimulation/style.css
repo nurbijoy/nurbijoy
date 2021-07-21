@@ -22,9 +22,9 @@ html, body {
     display: flex;
 }
 
-.container-stack {
+.container-queue {
 	flex: 2;
-	min-width: 240px;
+	width: 240px;
 }
 
 .container-display-btn {
@@ -33,7 +33,7 @@ html, body {
 
 }
 
-.btn-push {
+.btn-enqueue {
 	background-color: black;
 	color: yellow;
 	border: none;
@@ -47,7 +47,7 @@ html, body {
 	border-radius: 6px;
 }
 
-.btn-pop {
+.btn-dequeue {
 	background-color: #3E215D;
 	color: white;
 	border: none;
@@ -75,7 +75,7 @@ html, body {
 	border-radius: 6px;
 }
 
-.push-btn {
+.enqueue-btn {
 	background-color: black;
 	color: yellow;
 	border: none;
@@ -89,12 +89,12 @@ html, body {
 	border-radius: 6px;
 }
 
-.container-push {
+.container-enqueue {
 	visibility: hidden;
 }
 
 
-#display-top {
+#display-front {
 	color: green;
 }
 
@@ -106,7 +106,7 @@ html, body {
 	color: #FF7F50;
 }
 
-.display-stack {
+.display-queue {
 	background-color: #14274E ;
 	padding: 20px;
 	color: white;
@@ -117,7 +117,7 @@ html, body {
 	font-size: 50px;
 }
 
-.stack-info {
+.queue-info {
 	color: #008080;
 
 }

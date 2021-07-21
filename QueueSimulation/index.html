@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1 class="heading">জাভাস্ক্রিপ্ট কিউ সিমুলেশন</h1>
+        
+        <div class="container">
+            <div class="container-display-btn">
+                <div class="container-display">
+                    <h1 id="display-front">ফ্রন্ট এলিমেন্ট:</h1>
+                    <h1 id="display-action">এই মুহূর্তে হয়েছে:</h1>
+                    <h1 id="display-size">কিউ সাইজ: 0</h1>
+                </div>
+
+                <div class="container-btn">
+                    <button type="button" class="btn-enqueue" onclick="set_input()">এনকিউ করুন</button>
+                    <button type="button" class="btn-dequeue" onclick="dequeue_item()">ডিকিউ করুন</button>
+                    <button type="button" class="btn-clear" onclick="clear_queue()">কিউ খালি করুন</button>
+                </div>
+
+                <div class="container-enqueue" id="container-enqueue">
+                    <div class="container-enqueue-input">
+                        <input type="input" class="input" id="input" placeholder="রাখার জন্য কিছু দিন">
+                    </div>
+                    <div class="container-enqueue-btn">
+                        <button type="button" class="enqueue-btn" onclick="enqueue_item()">কিউতে রাখুন</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-queue">
+                    <h1 class="queue-info">কিউ</h1>
+                    <h2 id="display-queue" class="display-queue">কিউতে কিছু নেই</h2>
+            </div>
+        </div>
+
+    </body>
+    <script src="queue.js"></script>
+    <script src="main.js"></script>
+</html>

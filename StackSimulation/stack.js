@@ -31,7 +31,7 @@ class Stack {
 
     toString() {
       let text = "" ;
-      for(let i = this.count - 1 ; i >= 0 ; i --) text += this.items[i] + "<br>" ;
+      for(let i = 0 ; i < this.count ; i ++) text += this.items[i] + "<br>" ;
         return text ;
     }
 
