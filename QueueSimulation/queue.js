@@ -33,7 +33,7 @@ class queue {
 
     toString() {
       let text = "" ;
-      for(let i = this.front ; i < this.rear ; i ++) text += this.items[i] + "<br>" ;
+      for(let i = this.rear - 1 ; i >= this.front ; i --) text += this.items[i] + "<br>" ;
         return text ;
     }
 
