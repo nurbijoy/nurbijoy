@@ -24,7 +24,7 @@ html, body {
 
 .container-stack {
 	flex: 2;
-	min-width: 240px;
+	width: 240px;
 }
 
 .container-display-btn {
