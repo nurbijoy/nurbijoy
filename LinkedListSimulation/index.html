@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        
+        <div class="container">
+            <div container-header>
+                <h1 class="heading">জাভাস্ক্রিপ্ট লিংকড লিস্ট সিমুলেশন</h1>
+            </div>
+
+            <div class="container-display">
+                <h1 id="display">লিংকড লিস্টে কোনো নোড নেই</h1>
+            </div>
+
+            <div class="container-control">
+                <div class="container-append">
+                    <div class="container-btn-append-open">
+                        <button type="button" onclick="open_append()" class="btn-append-open">এপেন্ড করুন</button>
+                    </div>
+
+                    <div class="container-btn-input-append" id="container-btn-input-append">
+                        <div class="container-input-append">
+                            <input type="number" id="input-append" placeholder="সংখ্যা দিন">
+                        </div>
+
+                        <div class="container-btn-append">
+                            <button type="button" id="btn-append" onclick="perform_append()">শেষে রাখুন</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-prepend">
+                    <div class="container-btn-prepend-open">
+                        <button type="button" onclick="open_prepend()" class="btn-prepend-open">প্রিপেন্ড করুন</button>
+                    </div>
+
+                    <div class="container-btn-input-prepend" id="container-btn-input-prepend">
+                        <div class="container-input-prepend">
+                            <input type="number" id="input-prepend" placeholder="সংখ্যা দিন">
+                        </div>
+
+                        <div class="container-btn-prepend">
+                            <button type="button" id="btn-prepend" onclick="perform_prepend()">প্রথমে রাখুন</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-insertpos">
+                    <div class="container-btn-insertpos-open">
+                        <button type="button" onclick="open_insertpos()" class="btn-insertpos-open">ইনডেক্সে রাখুন</button>
+                    </div>
+
+                    <div class="container-btn-input-insertpos" id="container-btn-input-insertpos">
+                        <div class="container-input-insertpos-number">
+                            <input type="number" id="input-insertpos-number" placeholder="সংখ্যা দিন">
+                        </div>
+
+                        <div class="container-input-insertpos-index">
+                            <input type="number" id="input-insertpos-index" placeholder="ইনডেক্স দিন" min="0">
+                        </div>
+
+                        <div class="container-btn-insertpos">
+                            <button type="button" id="btn-insertpos" onclick="perform_insertpos()">ইনডেক্সে রাখুন</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-removefrom">
+                    <div class="container-btn-removefrom-open">
+                        <button type="button" onclick="open_removefrom()" class="btn-removefrom-open">ইনডেক্স থেকে মুছুন</button>
+                    </div>
+
+                    <div class="container-btn-input-removefrom" id="container-btn-input-removefrom">
+                        <div class="container-input-removefrom">
+                            <input type="number" id="input-removefrom" placeholder="ইনডেক্স দিন" min="0">
+                        </div>
+
+                        <div class="container-btn-removefrom">
+                            <button type="button" id="btn-removefrom" onclick="perform_removefrom()">ইনডেক্স থেকে মুছুন</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-removeelement">
+                    <div class="container-btn-removeelement-open">
+                        <button type="button" onclick="open_removeelement()" class="btn-removeelement-open">সংখ্যা মুছুন</button>
+                    </div>
+
+                    <div class="container-btn-input-removeelement" id="container-btn-input-removeelement">
+                        <div class="container-input-removeelement">
+                            <input type="number" id="input-removeelement" placeholder="সংখ্যা দিন">
+                        </div>
+
+                        <div class="container-btn-removeelement">
+                            <button type="button" id="btn-removeelement" onclick="perform_removeelement()">সংখ্যা মুছুন</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="container-indexof">
+                    <div class="container-btn-indexof-open">
+                        <button type="button" onclick="open_indexof()" class="btn-indexof-open">ইনডেক্স বের করুন</button>
+                    </div>
+
+                    <div class="container-btn-input-indexof" id="container-btn-input-indexof">
+                        <div class="container-input-indexof">
+                            <input type="number" id="input-indexof" placeholder="সংখ্যা দিন">
+                        </div>
+
+                        <div class="container-btn-indexof">
+                            <button type="button" id="btn-indexof" onclick="perform_indexof()">ইনডেক্স বের করুন</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+    <script src="main.js"></script>
+</html>
