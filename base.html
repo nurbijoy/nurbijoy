@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="nurbijoy">
+    <meta name="description" content="Portfolio of Nur Mohammad Bijoy - Researcher and Software Engineer">
+    <meta name="keywords" content="portfolio, researcher, software engineer, machine learning">
+
+    <!-- Site Title -->
+    <title>{% block title %}Nur Bijoy{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'img/fav.png' %}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700,900" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/linearicons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.css' %}">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    
+    <!-- Block for page-specific CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Start Preloader Area -->
+    <div class="preloader-area">
+        <div class="loader-box">
+            <div class="loader"></div>
+        </div>
+    </div>
+    <!-- End Preloader Area -->
+
+    <!-- Start Header Area -->
+    <header id="header">
+        <div class="container main-menu">
+            <div class="row align-items-center d-flex">
+                <div id="logo">
+                    <a href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="Nur Bijoy Logo"></a>
+                </div>
+                <nav id="nav-menu-container">
+                    <ul class="nav-menu">
+                        <li><a class="{% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                        <li><a class="{% if 'portfolio' in request.path %}active{% endif %}" href="{% url 'portfolio' %}">Profile</a></li>
+                        <li><a class="{% if 'research' in request.path %}active{% endif %}" href="{% url 'research_home' %}">Research</a></li>
+                        <li class="menu-has-children">
+                            <a class="{% if 'projects' in request.path %}active{% endif %}" href="{% url 'projects_home' %}">Projects</a>
+                            <ul>
+                                <li><a href="{% url 'web_projects' %}">Web Development</a></li>
+                                <li><a href="{% url 'ml_projects' %}">Machine Learning</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <!-- End Header Area -->
+
+    <!-- Main Content Block -->
+    {% block content %}{% endblock %}
+
+    <!-- Start Contact Area -->
+    <section class="contact-area section-gap-20">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="contact-title">
+                        <h2>Contact Me</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-80">
+                <div class="col-lg-4 col-md-4">
+                    <div class="contact-box">
+                        <h4>+880 1878281850</h4>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="contact-box">
+                        <h4>nurmdbijoy@gmail.com</h4>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="contact-box">
+                        <h4>nurbijoy.github.io</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <a href="{% url 'contact' %}" class="primary-btn mt-50" data-text="Leave a message">
+                        <span>L</span>
+                        <span>e</span>
+                        <span>a</span>
+                        <span>v</span>
+                        <span>e</span>
+                        <span> </span>
+                        <span>a</span>
+                        <span> </span>
+                        <span>M</span>
+                        <span>e</span>
+                        <span>s</span>
+                        <span>s</span>
+                        <span>a</span>
+                        <span>g</span>
+                        <span>e</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Contact Area -->
+
+    <!-- Start Footer Area -->
+    <footer class="footer-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="footer-top flex-column">
+                        <div class="footer-social">
+                            <a href="https://web.facebook.com/simplebijoy/" target="_blank" rel="noopener noreferrer"><i class="fa fa-facebook"></i></a>
+                            <a href="https://www.instagram.com/nur__bijoy/" target="_blank" rel="noopener noreferrer"><i class="fa fa-instagram"></i></a>
+                            <a href="https://github.com/nurbijoy" target="_blank" rel="noopener noreferrer"><i class="fa fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/nur-bijoy/" target="_blank" rel="noopener noreferrer"><i class="fa fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row footer-bottom justify-content-center">
+                <p class="col-lg-8 col-sm-12 footer-text">
+                    &copy; <script>document.write(new Date().getFullYear());</script> Nur Mohammad Bijoy | All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer Area -->
+
+    <!-- Scroll to Top Button -->
+    <div id="back-top">
+        <a title="Go to Top" href="#">
+            <i class="lnr lnr-arrow-up"></i>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/vendor/jquery-2.2.4.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="{% static 'js/vendor/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/easing.min.js' %}"></script>
+    <script src="{% static 'js/hoverIntent.js' %}"></script>
+    <script src="{% static 'js/superfish.min.js' %}"></script>
+    <script src="{% static 'js/mn-accordion.js' %}"></script>
+    <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'js/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'js/jquery.circlechart.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <!-- Block for page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,392 +1,215 @@
-<!DOCTYPE html>
-<html lang="en" class="no-js">
+{% extends "base.html" %}
 
-<head>
-	<!-- Mobile Specific Meta -->
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<!-- Favicon-->
-	<link rel="shortcut icon" href="img/fav.png">
-	<!-- Author Meta -->
-	<meta name="author" content="nurbijoy">
-	<!-- Meta Description -->
-	<meta name="description" content="">
-	<!-- Meta Keyword -->
-	<meta name="keywords" content="">
-	<!-- meta character set -->
-	<meta charset="UTF-8">
-	<!-- Site Title -->
-	<title>Nur Bijoy</title>
+{% block title %}Nur Bijoy - Home{% endblock %}
 
-	<link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700,900" rel="stylesheet">
-	<!--
-			CSS
-			============================================= -->
-	<link rel="stylesheet" href="css/linearicons.css">
-	<link rel="stylesheet" href="css/font-awesome.min.css">
-	<link rel="stylesheet" href="css/bootstrap.css">
-	<link rel="stylesheet" href="css/magnific-popup.css">
-	<link rel="stylesheet" href="css/nice-select.css">
-	<link rel="stylesheet" href="css/animate.min.css">
-	<link rel="stylesheet" href="css/owl.carousel.css">
-	<link rel="stylesheet" href="css/main.css">
-</head>
+{% block content %}
+<!-- Start Banner Area -->
+<section class="home-banner-area">
+    <div class="container">
+        <div class="row fullscreen d-flex align-items-center">
+            <div class="banner-content col-lg-6 col-md-12 justify-content-center">
+                <div class="me wow fadeInDown" data-wow-duration="1s" data-wow-delay="1.2s">It's me</div>
+                <h1 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay="1.7s">Nur Mohammad Bijoy</h1>
+                <div class="designation mb-50 wow fadeInUp" data-wow-duration="1s" data-wow-delay="2.1s">
+                    Competitive Programmer
+                    <span class="designer">Researcher</span>
+                    and <br>
+                    <span class="developer">Software Engineer (Future)</span>
+                </div>
+                <a href="{% url 'contact' %}" class="primary-btn" data-text="Contact Me">
+                    <span>C</span>
+                    <span>o</span>
+                    <span>n</span>
+                    <span>t</span>
+                    <span>a</span>
+                    <span>c</span>
+                    <span>t</span>
+                    <span> </span>
+                    <span>M</span>
+                    <span>e</span>
+                </a>
+            </div>
+            <div class="banner-img col-lg-6 col-md-6 align-self-end">
+                <img class="img-fluid" src="{% static 'img/avatar.png' %}" alt="Nur Bijoy">
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
 
-<body>
+<!-- Start About Area -->
+<section class="about-area section-gap-20">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-lg-6 about-left">
+                <img class="img-fluid" src="{% static 'img/me.jpg' %}" alt="About Nur Bijoy">
+            </div>
+            <div class="col-lg-5 col-md-12 about-right">
+                <div class="section-title">
+                    <h2>about myself</h2>
+                </div>
+                <div class="mb-10 wow fadeIn" data-wow-duration=".8s">
+                    <p>
+                        I am a naive person. I like to tell a petty lie at a critical moment but do not like to hear a bit for a lame excuse. I prefer to talk to myself very little as I don't like garrulous people. Always try to keep calm. I don't find it uses talking too much. I am very fond of knowing new things and ideas especially getting different theories that are beyond the imagination of most of the people around me. I am an absolute fan of SCIENCE. The characteristic explanation of mine can't be described in such a petty introduction.
+                    </p>
+                    <p>
+                        The way of living myself is very simple. I like simplicity. I prefer a naive approach to an exaggerated one. I avoid the people who lie to me & who gain personal satisfaction utilizing my simplicity.
+                    </p>
+                </div>
+                <a href="{% url 'portfolio' %}" class="primary-btn" data-text="Profile">
+                    <span>P</span>
+                    <span>r</span>
+                    <span>o</span>
+                    <span>f</span>
+                    <span>i</span>
+                    <span>l</span>
+                    <span>e</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End About Area -->
 
-	<!-- Start Preloader Area -->
-	<div class="preloader-area">
-		<div class="loader-box">
-			<div class="loader"></div>
-		</div>
-	</div>
-	<!-- End Preloader Area -->
+<!-- Start Latest Research Works Area -->
+<section class="work-area section-gap-20" id="work">
+    <div class="container">
+        <div class="row d-flex justify-content-between align-items-end mb-80">
+            <div class="col-lg-6">
+                <div class="section-title">
+                    <h2>Latest Research Works</h2>
+                </div>
+            </div>
+        </div>
 
+        <div class="filters-content">
+            <div class="row grid">
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all creative wow fadeInUp" data-wow-duration="2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/research/notebook/mushroom.jpeg' %}" alt="Mushroom Classification">
+                        </div>
+                        <div class="middle">
+                            <h4>Mushroom Classification</h4>
+                            <div class="cat">Edible & Poisonous Mushroom Classification</div>
+                        </div>
+                        <a class="overlay" href="{% url 'mushroom_research' %}"></a>
+                        <h2>Mushroom Classification</h2>
+                    </div>
+                </div>
+                
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/research/notebook/iris.jpg' %}" alt="Iris Flower Classification">
+                        </div>
+                        <div class="middle">
+                            <h4>Iris flower classification</h4>
+                            <div class="cat">Setosa, Versicolor & Virginica iris species classification</div>
+                        </div>
+                        <a class="overlay" href="{% url 'iris_research' %}"></a>
+                        <h2>Iris Flower Classification</h2>
+                    </div>
+                </div>
 
-	<!-- Start Header Area -->
-	<header id="header">
-		<div class="container main-menu">
-			<div class="row align-items-center d-flex">
-				<div id="logo">
-					<a href="index.html"><img src="img/logo.png" alt="" title="" /></a>
-				</div>
-				<nav id="nav-menu-container">
-					<ul class="nav-menu">
-						<li class=""><a class="active" href="index.html">Home</a></li>
-						<li><a href="portfolio.html">Profile</a></li>
-						<li><a href="research_home.html">Research</a></li>
-						<li class="menu-has-children"><a href="projects_home.html">Projects</a>
-							<ul>
-								<li><a href="web_development_projects.html">Web Development</a></li>
-								<li><a href="#">Machine Learning</a></li>
-							</ul>
-						</li>
-					</ul>
-				</nav>
-			</div>
-		</div>
-	</header>
-	<!-- End Header Area -->
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/research/notebook/heart.jpg' %}" alt="Heart Disease Detection">
+                        </div>
+                        <div class="middle">
+                            <h4>Heart Disease Detection</h4>
+                            <div class="cat">Critical Heart Failure Detection</div>
+                        </div>
+                        <a class="overlay" href="{% url 'heart_research' %}"></a>
+                        <h2>Heart Disease Detection</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'research_home' %}" class="primary-btn" data-text="More">
+                    <span>M</span>
+                    <span>o</span>
+                    <span>r</span>
+                    <span>e</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Research Works Area -->
 
+<!-- Start Latest Project Works Area -->
+<section class="work-area section-gap-20" id="work">
+    <div class="container">
+        <div class="row d-flex justify-content-between align-items-end mb-80">
+            <div class="col-lg-6">
+                <div class="section-title">
+                    <h2>Latest Project Works</h2>
+                </div>
+            </div>
+        </div>
 
-	<!-- start banner Area -->
-	<section class="home-banner-area">
-		<div class="container">
-			<div class="row fullscreen d-flex align-items-center">
-				<div class="banner-content col-lg-6 col-md-12 justify-content-center ">
-					<div class="me wow fadeInDown" data-wow-duration="1s" data-wow-delay="1.2s">It's me</div>
-					<h1 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay="1.7s">Nur Mohammad Bijoy</h1>
-					<div class="designation mb-50 wow fadeInUp" data-wow-duration="1s" data-wow-delay="2.1s">
-						Competitive Programmar
-						<span class="designer">Researcher</span>
-						and <br>
-						<span class="developer">Software Engineer(Future)</span>
-					</div>
-					<a href="contact.html" class="primary-btn" data-text="Contact Me">
-						<span>C</span>
-						<span>o</span>
-						<span>n</span>
-						<span>t</span>
-						<span>a</span>
-						<span>c</span>
-						<span>t</span>
-						<span> </span>
-						<span>M</span>
-						<span>e</span>
-					</a>
-				</div>
-				<div class="banner-img col-lg-6 col-md-6 align-self-end">
-					<img class="img-fluid" src="img/avatar.png" alt="">
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End banner Area -->
+        <div class="filters-content">
+            <div class="row grid">
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all creative wow fadeInUp" data-wow-duration="2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/work/stack.jpeg' %}" alt="Stack Simulation">
+                        </div>
+                        <div class="middle">
+                            <h4>Stack Simulation</h4>
+                            <div class="cat">Stack Push, Pop, Top, Clear Operations</div>
+                        </div>
+                        <a class="overlay" href="{% url 'stack_simulation' %}"></a>
+                        <h2>Stack Simulation</h2>
+                    </div>
+                </div>
 
-	<!-- Start About Area -->
-	<section class="about-area section-gap-20">
-		<div class="container">
-			<div class="row align-items-center justify-content-between">
-				<div class="col-lg-6 about-left">
-					<img class="img-fluid" src="img/me.jpg" alt="">
-				</div>
-				<div class="col-lg-5 col-md-12 about-right">
-					<div class="section-title">
-						<h2>about myselt</h2>
-					</div>
-					<div class="mb-10 wow fadeIn" data-wow-duration=".8s">
-						<p>
-							I am a naive person. I like to tell a petty lie at a critical moment but do not like to hear a bit for a lame excuse. I prefer to talk to myself very little as I don't like garrulous people. Always try to keep calm. I don't find it uses talking too much. I am very fond of knowing new things and ideas especially getting different theories that are beyond the imagination of most of the people around me. I am an absolute fan of SCIENCE. The characteristic explanation of mine can't be described in such a petty introduction
-						</p>
-						<p>The way of living myself is very simple. I like simplicity. I prefer a naive approach to an exaggerated one. I avoid the people who lie to me & who gain personal satisfaction utilizing my simplicity..
-						</p>
-					</div>
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/work/queue.png' %}" alt="Queue Simulation">
+                        </div>
+                        <div class="middle">
+                            <h4>Queue Simulation</h4>
+                            <div class="cat">Queue Enqueue, Deque, Front, Clear Operations</div>
+                        </div>
+                        <a class="overlay" href="{% url 'queue_simulation' %}"></a>
+                        <h2>Queue Simulation</h2>
+                    </div>
+                </div>
 
-					<a href="portfolio.html" class="primary-btn" data-text="Profile">
-						<span>P</span>
-						<span>r</span>
-						<span>o</span>
-						<span>f</span>
-						<span>i</span>
-						<span>l</span>
-						<span>e</span>
-					</a>
-					
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End About Area -->
-
-
-	<!-- Start Latest Research Works Area -->
-	<section class="work-area section-gap-20" id="work">
-		<div class="container">
-			<div class="row d-flex justify-content-between align-items-end mb-80">
-				<div class="col-lg-6">
-					<div class="section-title">
-						<h2>Latest Research Works</h2>
-					</div>
-				</div>
-			</div>
-
-			<div class="filters-content">
-				<div class="row grid">
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all creative wow fadeInUp" data-wow-duration="2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/research/notebook/mushroom.jpeg" alt="">
-							</div>
-							<div class="middle">
-								<h4>Mushroom Classification</h4>
-								<div class="cat">Edible & Poisonous Mushroom Classification</div>
-							</div>
-							<a class="overlay" href="research/notebook/mushroom_classification.html"></a>
-							<h2>Mushroom Classification</h2>
-						</div>
-					</div>
-					
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/research/notebook/iris.jpg" alt="">
-							</div>
-							<div class="middle">
-								<h4>Iris flower classification</h4>
-								<div class="cat">Setosa, Versicolor & Virginica iris species classification</div>
-							</div>
-							<a class="overlay" href="#"></a>
-							<h2>Iris Flower Classification</h2>
-						</div>
-					</div>
-
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/research/notebook/heart.jpg" alt="">
-							</div>
-							<div class="middle">
-								<h4>Heart Disease Detection</h4>
-								<div class="cat">Critical Heart Failure Detection</div>
-							</div>
-							<a class="overlay" href="#"></a>
-							<h2>Heart Disease Detection</h2>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="research_home.html" class="primary-btn" data-text="More">
-						<span>M</span>
-						<span>o</span>
-						<span>r</span>
-						<span>e</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End Work Area Area -->
-
-	<!-- Start Latest Project Works Area -->
-	<section class="work-area section-gap-20" id="work">
-		<div class="container">
-			<div class="row d-flex justify-content-between align-items-end mb-80">
-				<div class="col-lg-6">
-					<div class="section-title">
-						<h2>Latest Project Works</h2>
-					</div>
-				</div>
-			</div>
-
-			<div class="filters-content">
-				<div class="row grid">
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all creative wow fadeInUp" data-wow-duration="2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/work/stack.jpeg">
-							</div>
-							<div class="middle">
-								<h4>Stack Simulation</h4>
-								<div class="cat">Stack Push, Pop, Top, Clear Operations</div>
-							</div>
-							<a class="overlay" href="StackSimulation/stack.html"></a>
-							<h2>Stack Simulation</h2>
-						</div>
-					</div>
-
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/work/queue.png" alt="">
-							</div>
-							<div class="middle">
-								<h4>Queue Simulation</h4>
-								<div class="cat">Queue Enqueue, Deque, Front, Clear Operations</div>
-							</div>
-							<a class="overlay" href="QueueSimulation/index.html"></a>
-							<h2>Queue Simulation</h2>
-						</div>
-					</div>
-
-					<div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="img/work/list.png" alt="">
-							</div>
-							<div class="middle">
-								<h4>Linked List Simulation</h4>
-								<div class="cat">Append, Prepend and many more</div>
-							</div>
-							<a class="overlay" href="LinkedListSimulation/index.html"></a>
-							<h2>Linked List Simulation</h2>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="projects_home.html" class="primary-btn" data-text="More">
-						<span>M</span>
-						<span>o</span>
-						<span>r</span>
-						<span>e</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End Work Area Area -->
-
-	<!-- Start Contact Area -->
-	<section class="contact-area section-gap-20">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="contact-title">
-						<h2>Contact Me</h2>
-					</div>
-				</div>
-			</div>
-
-			<div class="row mt-80">
-				<div class="col-lg-4 col-md-4">
-					<div class="contact-box">
-						<h4>+880 1878281850</h4>
-					</div>
-				</div>
-				<div class="col-lg-4 col-md-4">
-					<div class="contact-box">
-						<h4>nurmdbijoy@gmail.com</h4>
-					</div>
-				</div>
-				<div class="col-lg-4 col-md-4">
-					<div class="contact-box">
-						<h4>nurbijoy.github.io</h4>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-lg-12 text-center">
-					<a href="contact.html" class="primary-btn mt-50" data-text="Leave a message">
-						<span>L</span>
-						<span>e</span>
-						<span>a</span>
-						<span>v</span>
-						<span>e</span>
-						<span> </span>
-						<span>a</span>
-						<span> </span>
-						<span>M</span>
-						<span>e</span>
-						<span>s</span>
-						<span>s</span>
-						<span>a</span>
-						<span>g</span>
-						<span>e</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End Contact Area -->
-
-
-	<!-- start footer Area -->
-	<footer class="footer-area">
-		<div class="container">
-			<div class="row justify-content-center">
-				<div class="col-lg-12">
-					<div class="footer-top flex-column">
-						<div class="footer-social">
-							<a href="https://web.facebook.com/simplebijoy/"><i class="fa fa-facebook"></i></a>
-							<a href="https://www.instagram.com/nur__bijoy/"><i class="fa fa-instagram"></i></a>
-							<a href="https://github.com/nurbijoy"><i class="fa fa-github"></i></a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row footer-bottom justify-content-center">
-				<p class="col-lg-8 col-sm-12 footer-text">
-					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy; 2020 | Nur Mohammad Bijoy | All rights reserved.
-			</div>
-		</div>
-	</footer>
-	<!-- End footer Area -->
-
-	<!-- ####################### Start Scroll to Top Area ####################### -->
-	<div id="back-top">
-		<a title="Go to Top" href="#">
-			<i class="lnr lnr-arrow-up"></i>
-		</a>
-	</div>
-	<!-- ####################### End Scroll to Top Area ####################### -->
-
-	<script src="js/vendor/jquery-2.2.4.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-	 crossorigin="anonymous"></script>
-	<script src="js/vendor/bootstrap.min.js"></script>
-	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
-	<script src="js/easing.min.js"></script>
-	<script src="js/hoverIntent.js"></script>
-	<script src="js/superfish.min.js"></script>
-	<script src="js/mn-accordion.js"></script>
-	<script src="js/jquery.ajaxchimp.min.js"></script>
-	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/owl.carousel.min.js"></script>
-	<script src="js/jquery.nice-select.min.js"></script>
-	<script src="js/isotope.pkgd.min.js"></script>
-	<script src="js/jquery.circlechart.js"></script>
-	<script src="js/mail-script.js"></script>
-	<script src="js/wow.min.js"></script>
-	<script src="js/main.js"></script>
-</body>
-
-</html>
+                <div class="single-work col-lg-4 col-md-6 col-sm-12 all web-design branding wow fadeInUp" data-wow-duration="2s" data-wow-delay="0.2s">
+                    <div class="relative">
+                        <div class="thumb">
+                            <div class="overlay overlay-bg"></div>
+                            <img class="image img-fluid" src="{% static 'img/work/list.png' %}" alt="Linked List Simulation">
+                        </div>
+                        <div class="middle">
+                            <h4>Linked List Simulation</h4>
+                            <div class="cat">Append, Prepend and many more</div>
+                        </div>
+                        <a class="overlay" href="{% url 'linked_list_simulation' %}"></a>
+                        <h2>Linked List Simulation</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="{% url 'projects_home' %}" class="primary-btn" data-text="More">
+                    <span>M</span>
+                    <span>o</span>
+                    <span>r</span>
+                    <span>e</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Project Works Area -->
+{% endblock %}
