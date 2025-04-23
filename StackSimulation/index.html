@@ -1,44 +1,380 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1 class="heading">জাভাস্ক্রিপ্ট স্ট্যাক সিমুলেশন</h1>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জাভাস্ক্রিপ্ট স্ট্যাক সিমুলেশন</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
         
-        <div class="container">
-            <div class="container-display-btn">
-                <div class="container-display">
-                    <h1 id="display-top">টপ এলিমেন্ট:</h1>
-                    <h1 id="display-action">এই মুহূর্তে হয়েছে:</h1>
-                    <h1 id="display-size">স্ট্যাক সাইজ: 0</h1>
-                </div>
-
-                <div class="container-btn">
-                    <button type="button" class="btn-push" onclick="set_input()">পুশ করুন</button>
-                    <button type="button" class="btn-pop" onclick="pop_item()">পপ করুন</button>
-                    <button type="button" class="btn-clear" onclick="clear_stack()">স্ট্যাক খালি করুন</button>
-                </div>
-
-                <div class="container-push" id="container-push">
-                    <div class="container-push-input">
-                        <input type="input" class="input" id="input" placeholder="রাখার জন্য কিছু দিন">
-                    </div>
-                    <div class="container-push-btn">
-                        <button type="button" class="push-btn" onclick="push_item()">স্ট্যাকে রাখুন</button>
-                    </div>
-                </div>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Nirmala UI', 'Verdana', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .heading {
+            color: var(--dark-color);
+            font-size: 2.5rem;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .container-display-btn {
+            padding: 25px;
+            background-color: var(--light-color);
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .container-display {
+            margin-bottom: 25px;
+        }
+        
+        .container-display h1 {
+            font-size: 1.3rem;
+            margin: 8px 0;
+            color: var(--dark-color);
+        }
+        
+        #display-top {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        #display-action {
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+        
+        #display-size {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .container-btn {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn-push {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-push:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-pop {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-pop:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-clear {
+            background-color: var(--dark-color);
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+        }
+        
+        .container-push {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container-push-input {
+            margin-bottom: 15px;
+        }
+        
+        .container-push-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .container-push-input input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .push-btn {
+            background-color: var(--success-color);
+            color: white;
+            width: 100%;
+        }
+        
+        .push-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .container-stack {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .stack-info {
+            color: var(--dark-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .display-stack {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: flex-end;
+            word-break: break-all;
+            gap: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .heading {
+                font-size: 2rem;
+            }
+            
+            .container {
+                border-radius: 8px;
+            }
+            
+            .container-display-btn {
+                padding: 15px;
+            }
+            
+            .container-btn {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="heading">জাভাস্ক্রিপ্ট স্ট্যাক সিমুলেশন</h1>
+    
+    <div class="container">
+        <div class="container-display-btn">
+            <div class="container-display">
+                <h1 id="display-top">টপ এলিমেন্ট:</h1>
+                <h1 id="display-action">এই মুহূর্তে হয়েছে:</h1>
+                <h1 id="display-size">স্ট্যাক সাইজ: 0</h1>
             </div>
 
-            <div class="container-stack">
-                    <h1 class="stack-info">স্ট্যাক</h1>
-                    <h2 id="display-stack" class="display-stack">স্ট্যাকে কিছু নেই</h2>
+            <div class="container-btn">
+                <button type="button" class="btn-push" onclick="set_input()">পুশ করুন</button>
+                <button type="button" class="btn-pop" onclick="pop_item()">পপ করুন</button>
+                <button type="button" class="btn-clear" onclick="clear_stack()">স্ট্যাক খালি করুন</button>
+            </div>
+
+            <div class="container-push" id="container-push">
+                <div class="container-push-input">
+                    <input type="text" class="input" id="input" placeholder="রাখার জন্য কিছু দিন">
+                </div>
+                <div class="container-push-btn">
+                    <button type="button" class="push-btn" onclick="push_item()">স্ট্যাকে রাখুন</button>
+                </div>
             </div>
         </div>
 
-    </body>
-    <script src="stack.js"></script>
-    <script src="main.js"></script>
+        <div class="container-stack">
+            <h1 class="stack-info">স্ট্যাক</h1>
+            <div id="display-stack" class="display-stack">স্ট্যাকে কিছু নেই</div>
+        </div>
+    </div>
+
+    <script>
+        class Stack {
+            constructor() {
+                this.items = [];
+            }
+            
+            push(element) {
+                this.items.push(element);
+            }
+            
+            pop() {
+                if (this.isEmpty()) return "Empty stack";
+                return this.items.pop();
+            }
+            
+            peek() {
+                if (this.isEmpty()) return "Empty stack";
+                return this.items[this.items.length - 1];
+            }
+            
+            size() {
+                return this.items.length;
+            }
+            
+            isEmpty() {
+                return this.items.length === 0;
+            }
+            
+            clear() {
+                this.items = [];
+            }
+            
+            toString() {
+                if (this.isEmpty()) return [];
+                return [...this.items].reverse(); // Show stack from top to bottom
+            }
+        }
+
+        const stack = new Stack();
+
+        const dispTop = document.getElementById("display-top");
+        const dispAction = document.getElementById("display-action");
+        const containerPush = document.getElementById("container-push");
+        const dispStack = document.getElementById("display-stack");
+        const dispSize = document.getElementById("display-size");
+
+        function set_input() {
+            containerPush.style.display = "block";
+            document.getElementById("input").focus();
+        }
+
+        function push_item() {
+            const inputElem = document.getElementById("input");
+            const elemValue = inputElem.value.trim();
+            
+            try {
+                if (elemValue === "") throw "খালি";
+                if (isNaN(elemValue)) throw "সংখ্যা না";
+                
+                const numValue = Number(elemValue);
+                stack.push(numValue);
+                inputElem.value = "";
+                updateDisplay();
+                containerPush.style.display = "none";
+                dispAction.innerHTML = "এই মুহূর্তে হয়েছে: " + numValue + " স্ট্যাকে রাখা হয়েছে";
+            } catch(err) {
+                dispAction.innerHTML = "এই মুহূর্তে হয়েছে: ইনপুট " + err;
+                inputElem.value = "";
+            }
+        }
+
+        function pop_item() {
+            const poppedItem = stack.pop();
+            if (poppedItem === "Empty stack") {
+                dispAction.innerHTML = "এই মুহূর্তে হয়েছে: স্ট্যাকে কিছু নেই";
+            } else {
+                dispAction.innerHTML = "এই মুহূর্তে হয়েছে: " + poppedItem + " স্ট্যাক থেকে সরানো হয়েছে";
+            }
+            updateDisplay();
+        }
+
+        function clear_stack() {
+            stack.clear();
+            updateDisplay();
+            dispAction.innerHTML = "এই মুহূর্তে হয়েছে: স্ট্যাক খালি করা হয়েছে";
+        }
+
+        function updateDisplay() {
+            // Update top element display
+            const topElement = stack.peek();
+            dispTop.innerHTML = "টপ এলিমেন্ট: " + (topElement === "Empty stack" ? "স্ট্যাকে কিছু নেই" : topElement);
+            
+            // Update size display
+            dispSize.innerHTML = "স্ট্যাক সাইজ: " + stack.size();
+            
+            // Update stack visualization
+            const stackItems = stack.toString();
+            dispStack.innerHTML = stackItems.length === 0 
+                ? "স্ট্যাকে কিছু নেই" 
+                : stackItems.map(item => `<div class="stack-item">${item}</div>`).join("");
+        }
+
+        // Close input container when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#container-push') && 
+                !event.target.classList.contains('btn-push')) {
+                containerPush.style.display = "none";
+            }
+        });
+
+        // Handle Enter key in input field
+        document.getElementById("input").addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                push_item();
+            }
+        });
+    </script>
+</body>
 </html>
