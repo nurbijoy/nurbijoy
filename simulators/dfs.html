@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS Visualization</title>
+    <style>
+        :root {
+            --empty: #f8f9fa;
+            --wall: #343a40;
+            --start: #28a745;
+            --end: #dc3545;
+            --visited: #17a2b8;
+            --path: #ffc107;
+            --current: #6f42c1;
+            --stack: #e83e8c;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--start), var(--end));
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-start {
+            background-color: var(--start);
+            color: white;
+        }
+
+        .btn-end {
+            background-color: var(--end);
+            color: white;
+        }
+
+        .btn-wall {
+            background-color: var(--wall);
+            color: white;
+        }
+
+        .btn-dfs {
+            background-color: var(--visited);
+            color: white;
+        }
+
+        .btn-clear {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-reset {
+            background-color: #fd7e14;
+            color: white;
+        }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(20, 25px);
+            grid-template-rows: repeat(15, 25px);
+            gap: 1px;
+            background-color: #adb5bd;
+            border: 1px solid #adb5bd;
+        }
+
+        .cell {
+            width: 25px;
+            height: 25px;
+            background-color: var(--empty);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.1s;
+        }
+
+        .cell.wall {
+            background-color: var(--wall);
+        }
+
+        .cell.start {
+            background-color: var(--start);
+            font-weight: bold;
+            color: white;
+        }
+
+        .cell.end {
+            background-color: var(--end);
+            font-weight: bold;
+            color: white;
+        }
+
+        .cell.visited {
+            background-color: var(--visited);
+            animation: fadeIn 0.3s;
+        }
+
+        .cell.path {
+            background-color: var(--path);
+            animation: pulse 1.5s infinite;
+        }
+
+        .cell.current {
+            background-color: var(--current);
+            animation: pulse 0.8s infinite;
+        }
+
+        .cell.stack {
+            background-color: var(--stack);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .speed-control input {
+            width: 100px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0.5; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(20, 15px);
+                grid-template-rows: repeat(15, 15px);
+            }
+            
+            .cell {
+                width: 15px;
+                height: 15px;
+                font-size: 10px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stats {
+                justify-content: space-around;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Depth-First Search Visualization</h1>
+        
+        <div class="controls">
+            <button class="btn-start" onclick="setMode('start')">
+                <i class="fas fa-play"></i> Set Start
+            </button>
+            <button class="btn-end" onclick="setMode('end')">
+                <i class="fas fa-flag"></i> Set End
+            </button>
+            <button class="btn-wall" onclick="setMode('wall')">
+                <i class="fas fa-wall"></i> Set Wall
+            </button>
+            <button class="btn-dfs" onclick="startDFS()">
+                <i class="fas fa-project-diagram"></i> Run DFS
+            </button>
+            <button class="btn-reset" onclick="resetSearch()">
+                <i class="fas fa-sync-alt"></i> Reset Search
+            </button>
+            <button class="btn-clear" onclick="clearWalls()">
+                <i class="fas fa-trash-alt"></i> Clear Walls
+            </button>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </div>
+        </div>
+        
+        <div class="grid-container">
+            <div class="grid" id="grid"></div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--start);"></div>
+                    <span>Start Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--end);"></div>
+                    <span>End Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--wall);"></div>
+                    <span>Wall</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--visited);"></div>
+                    <span>Visited</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--path);"></div>
+                    <span>Path</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--current);"></div>
+                    <span>Current</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--stack);"></div>
+                    <span>Stack</span>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="visitedCount">0</div>
+                    <div class="stat-label">Visited</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="pathLength">0</div>
+                    <div class="stat-label">Path Length</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="timeTaken">0</div>
+                    <div class="stat-label">ms</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Grid dimensions
+        const ROWS = 15;
+        const COLS = 20;
+        
+        // Cell types
+        const EMPTY = 0;
+        const WALL = 1;
+        const START = 2;
+        const END = 3;
+        
+        // Algorithm states
+        let grid = [];
+        let startPos = { row: 7, col: 5 };
+        let endPos = { row: 7, col: 14 };
+        let mode = 'wall'; // 'start', 'end', 'wall'
+        let isRunning = false;
+        let visitedCount = 0;
+        let pathLength = 0;
+        let animationSpeed = 50;
+        
+        // Initialize grid
+        function initializeGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            
+            grid = new Array(ROWS);
+            for (let row = 0; row < ROWS; row++) {
+                grid[row] = new Array(COLS).fill(EMPTY);
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    cell.addEventListener('click', () => handleCellClick(row, col));
+                    cell.addEventListener('mouseenter', () => handleCellHover(row, col));
+                    
+                    gridElement.appendChild(cell);
+                }
+            }
+            
+            // Set start and end positions
+            grid[startPos.row][startPos.col] = START;
+            grid[endPos.row][endPos.col] = END;
+            
+            updateGridVisualization();
+            
+            // Set up speed control
+            document.getElementById('speed').addEventListener('input', function() {
+                animationSpeed = 101 - this.value; // Invert so higher value = faster
+            });
+        }
+        
+        // Handle cell click
+        function handleCellClick(row, col) {
+            if (isRunning) return;
+            
+            const cellType = grid[row][col];
+            
+            if (mode === 'start' && cellType !== END) {
+                // Clear previous start
+                grid[startPos.row][startPos.col] = EMPTY;
+                // Set new start
+                startPos = { row, col };
+                grid[row][col] = START;
+            } 
+            else if (mode === 'end' && cellType !== START) {
+                // Clear previous end
+                grid[endPos.row][endPos.col] = EMPTY;
+                // Set new end
+                endPos = { row, col };
+                grid[row][col] = END;
+            } 
+            else if (mode === 'wall' && cellType === EMPTY) {
+                grid[row][col] = WALL;
+            } 
+            else if (mode === 'wall' && cellType === WALL) {
+                grid[row][col] = EMPTY;
+            }
+            
+            updateGridVisualization();
+        }
+        
+        // Handle cell hover (for drawing walls)
+        function handleCellHover(row, col) {
+            if (isRunning || mode !== 'wall' || !isMouseDown) return;
+            
+            const cellType = grid[row][col];
+            if (cellType === EMPTY) {
+                grid[row][col] = WALL;
+                updateGridVisualization();
+            } else if (cellType === WALL) {
+                grid[row][col] = EMPTY;
+                updateGridVisualization();
+            }
+        }
+        
+        // Track mouse state for wall drawing
+        let isMouseDown = false;
+        document.addEventListener('mousedown', () => { isMouseDown = true; });
+        document.addEventListener('mouseup', () => { isMouseDown = false; });
+        
+        // Update grid visualization
+        function updateGridVisualization() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                const cellType = grid[row][col];
+                
+                cell.className = 'cell';
+                cell.innerHTML = '';
+                
+                switch (cellType) {
+                    case WALL:
+                        cell.classList.add('wall');
+                        break;
+                    case START:
+                        cell.classList.add('start');
+                        cell.innerHTML = '<i class="fas fa-play"></i>';
+                        break;
+                    case END:
+                        cell.classList.add('end');
+                        cell.innerHTML = '<i class="fas fa-flag"></i>';
+                        break;
+                }
+            });
+        }
+        
+        // Set current mode
+        function setMode(newMode) {
+            if (isRunning) return;
+            mode = newMode;
+            
+            // Update button states
+            document.querySelectorAll('.controls button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (newMode === 'start') {
+                document.querySelector('.btn-start').classList.add('active');
+            } else if (newMode === 'end') {
+                document.querySelector('.btn-end').classList.add('active');
+            } else if (newMode === 'wall') {
+                document.querySelector('.btn-wall').classList.add('active');
+            }
+        }
+        
+        // Reset search visualization
+        function resetSearch() {
+            if (isRunning) return;
+            
+            // Clear visited and path cells
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (grid[row][col] > END) {
+                        grid[row][col] = EMPTY;
+                    }
+                }
+            }
+            
+            updateGridVisualization();
+            updateStats(0, 0, 0);
+        }
+        
+        // Clear all walls
+        function clearWalls() {
+            if (isRunning) return;
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (grid[row][col] === WALL) {
+                        grid[row][col] = EMPTY;
+                    }
+                }
+            }
+            
+            updateGridVisualization();
+        }
+        
+        // Update statistics
+        function updateStats(visited, path, time) {
+            visitedCount = visited;
+            pathLength = path;
+            
+            document.getElementById('visitedCount').textContent = visited;
+            document.getElementById('pathLength').textContent = path;
+            document.getElementById('timeTaken').textContent = time;
+        }
+        
+        // Start DFS algorithm
+        function startDFS() {
+            if (isRunning) return;
+            resetSearch();
+            isRunning = true;
+            
+            const startTime = performance.now();
+            visitedCount = 0;
+            pathLength = 0;
+            
+            // Create a stack for DFS
+            const stack = [];
+            stack.push({ ...startPos, dist: 0 });
+            
+            // Create a visited matrix and parent matrix
+            const visited = new Array(ROWS);
+            const parent = new Array(ROWS);
+            for (let row = 0; row < ROWS; row++) {
+                visited[row] = new Array(COLS).fill(false);
+                parent[row] = new Array(COLS).fill(null);
+            }
+            
+            visited[startPos.row][startPos.col] = true;
+            
+            // Directions: up, right, down, left
+            const directions = [
+                { row: -1, col: 0 },
+                { row: 0, col: 1 },
+                { row: 1, col: 0 },
+                { row: 0, col: -1 }
+            ];
+            
+            let found = false;
+            let endNode = null;
+            
+            // Process stack with delay for visualization
+            function processStack() {
+                if (stack.length === 0 || found) {
+                    // Search complete
+                    isRunning = false;
+                    const endTime = performance.now();
+                    updateStats(visitedCount, pathLength, Math.round(endTime - startTime));
+                    
+                    if (found) {
+                        visualizePath(parent, endNode);
+                    } else {
+                        alert("No path found to the destination!");
+                    }
+                    return;
+                }
+                
+                const current = stack.pop();
+                const { row, col, dist } = current;
+                
+                // Highlight current node
+                if (!(row === startPos.row && col === startPos.col) && 
+                    !(row === endPos.row && col === endPos.col)) {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add('current');
+                }
+                
+                // Check if we reached the end
+                if (row === endPos.row && col === endPos.col) {
+                    found = true;
+                    endNode = current;
+                    pathLength = dist;
+                    
+                    // Remove current highlight
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.remove('current');
+                    
+                    processStack();
+                    return;
+                }
+                
+                // Mark as visited (if not start/end)
+                if (!(row === startPos.row && col === startPos.col)) {
+                    visitedCount++;
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    setTimeout(() => {
+                        cell.classList.remove('current');
+                        cell.classList.add('visited');
+                    }, animationSpeed / 2);
+                }
+                
+                // Explore neighbors in random order (for more natural DFS)
+                const shuffledDirections = [...directions].sort(() => Math.random() - 0.5);
+                
+                for (const dir of shuffledDirections) {
+                    const newRow = row + dir.row;
+                    const newCol = col + dir.col;
+                    
+                    // Check if the neighbor is valid and not visited
+                    if (newRow >= 0 && newRow < ROWS && 
+                        newCol >= 0 && newCol < COLS && 
+                        grid[newRow][newCol] !== WALL && 
+                        !visited[newRow][newCol]) {
+                        
+                        visited[newRow][newCol] = true;
+                        parent[newRow][newCol] = current;
+                        stack.push({ row: newRow, col: newCol, dist: dist + 1 });
+                        
+                        // Mark as in stack (if not end)
+                        if (!(newRow === endPos.row && newCol === endPos.col)) {
+                            const cell = document.querySelector(`.cell[data-row="${newRow}"][data-col="${newCol}"]`);
+                            cell.classList.add('stack');
+                        }
+                    }
+                }
+                
+                // Continue processing after a delay
+                setTimeout(processStack, animationSpeed);
+            }
+            
+            // Start processing
+            processStack();
+        }
+        
+        // Visualize the found path
+        function visualizePath(parent, endNode) {
+            const path = [];
+            let current = endNode;
+            
+            // Reconstruct path
+            while (current && !(current.row === startPos.row && current.col === startPos.col)) {
+                path.unshift(current);
+                current = parent[current.row][current.col];
+            }
+            
+            // Animate path with delay
+            function animatePath(index) {
+                if (index >= path.length) return;
+                
+                const { row, col } = path[index];
+                const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                
+                // Remove stack/visited classes and add path class
+                cell.className = 'cell path';
+                cell.innerHTML = '<i class="fas fa-paw"></i>';
+                
+                setTimeout(() => animatePath(index + 1), 100);
+            }
+            
+            animatePath(0);
+        }
+        
+        // Initialize the grid when page loads
+        window.addEventListener('load', initializeGrid);
+    </script>
+</body>
+</html>

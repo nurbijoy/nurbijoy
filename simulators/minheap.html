@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min Heap Construction Visualization</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --highlight: #e74c3c;
+            --heap-node: #f39c12;
+            --sorted: #9b59b6;
+            --background: #f8f9fa;
+            --text: #2c3e50;
+            --swap: #1abc9c;
+            --processing: #e67e22;
+            --edge: #95a5a6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-highlight {
+            background-color: var(--highlight);
+            color: white;
+        }
+
+        .btn-processing {
+            background-color: var(--processing);
+            color: white;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 200px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .array-bar {
+            flex: 1;
+            margin: 0 2px;
+            background-color: var(--primary);
+            transition: height 0.3s, background-color 0.3s;
+            position: relative;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .array-bar.comparing {
+            background-color: var(--highlight);
+        }
+
+        .array-bar.heap-node {
+            background-color: var(--heap-node);
+        }
+
+        .array-bar.swapping {
+            background-color: var(--swap);
+        }
+
+        .array-bar.processing {
+            background-color: var(--processing);
+        }
+
+        .array-bar.value {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tree-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-height: 400px;
+            position: relative;
+        }
+
+        .tree {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tree-node {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: absolute;
+            transition: all 0.5s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .tree-node.heap-node {
+            background-color: var(--heap-node);
+        }
+
+        .tree-node.comparing {
+            background-color: var(--highlight);
+        }
+
+        .tree-node.swapping {
+            background-color: var(--swap);
+        }
+
+        .tree-node.processing {
+            background-color: var(--processing);
+        }
+
+        .tree-edge {
+            position: absolute;
+            background-color: var(--edge);
+            height: 2px;
+            transform-origin: 0 0;
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .speed-control input {
+            width: 100px;
+        }
+
+        .code-snippet {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stats {
+                justify-content: space-around;
+            }
+            
+            .array-bar {
+                margin: 0 1px;
+            }
+
+            .tree-node {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Min Heap Construction Visualization</h1>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="generateRandomArray()">
+                <i class="fas fa-random"></i> Random Array
+            </button>
+            <button class="btn-secondary" onclick="startHeapConstruction()" id="buildHeapBtn">
+                <i class="fas fa-play"></i> Build Heap
+            </button>
+            <button class="btn-processing" onclick="nextStep()" id="nextStepBtn" disabled>
+                <i class="fas fa-step-forward"></i> Next Step
+            </button>
+            <button class="btn-highlight" onclick="pauseResume()" id="pauseBtn">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button onclick="reset()">
+                <i class="fas fa-sync-alt"></i> Reset
+            </button>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </div>
+            <div class="speed-control">
+                <label for="size">Array Size:</label>
+                <input type="range" id="size" min="5" max="15" value="7">
+            </div>
+        </div>
+        
+        <div class="array-container" id="arrayContainer"></div>
+        <div class="tree-container">
+            <div class="tree" id="tree"></div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--primary);"></div>
+                    <span>Normal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--heap-node);"></div>
+                    <span>Heap Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--highlight);"></div>
+                    <span>Comparing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--swap);"></div>
+                    <span>Swapping</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--processing);"></div>
+                    <span>Processing</span>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="comparisons">0</div>
+                    <div class="stat-label">Comparisons</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="swaps">0</div>
+                    <div class="stat-label">Swaps</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="steps">0</div>
+                    <div class="stat-label">Steps</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation" id="explanation">
+            <h3>Min Heap Construction Process</h3>
+            <p>Click "Build Heap" to start the step-by-step visualization of constructing a min heap from the array.</p>
+            <p>The algorithm works by heapifying each non-leaf node starting from the last non-leaf node and moving up to the root.</p>
+        </div>
+        
+        <div class="code-snippet">
+            <pre>function buildMinHeap(arr) {
+    // Start from last non-leaf node and heapify each node
+    const n = arr.length;
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+}
+
+function heapify(arr, n, i) {
+    let smallest = i;
+    const left = 2 * i + 1;
+    const right = 2 * i + 2;
+
+    // Compare with left child
+    if (left < n && arr[left] < arr[smallest]) {
+        smallest = left;
+    }
+
+    // Compare with right child
+    if (right < n && arr[right] < arr[smallest]) {
+        smallest = right;
+    }
+
+    // If smallest is not the current node, swap and continue heapifying
+    if (smallest !== i) {
+        [arr[i], arr[smallest]] = [arr[smallest], arr[i]];
+        heapify(arr, n, smallest);
+    }
+}</pre>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let array = [];
+        let arrayBars = [];
+        let treeNodes = [];
+        let treeEdges = [];
+        let arraySize = 7;
+        let animationSpeed = 50;
+        let isBuilding = false;
+        let isPaused = false;
+        let comparisons = 0;
+        let swaps = 0;
+        let steps = 0;
+        let timeoutId = null;
+        let currentStep = 0;
+        let heapConstructionSteps = [];
+        
+        // Initialize the array visualization
+        function generateRandomArray() {
+            if (isBuilding) return;
+            
+            arraySize = parseInt(document.getElementById('size').value);
+            array = [];
+            
+            // Generate random array
+            for (let i = 0; i < arraySize; i++) {
+                array.push(Math.floor(Math.random() * 90) + 10); // Values between 10-100
+            }
+            
+            renderArrayAndTree();
+            resetStats();
+            document.getElementById('explanation').innerHTML = `
+                <h3>Min Heap Construction Process</h3>
+                <p>Click "Build Heap" to start the step-by-step visualization of constructing a min heap from the array.</p>
+                <p>The algorithm works by heapifying each non-leaf node starting from the last non-leaf node and moving up to the root.</p>
+            `;
+        }
+        
+        // Render array and tree
+        function renderArrayAndTree() {
+            const arrayContainer = document.getElementById('arrayContainer');
+            const tree = document.getElementById('tree');
+            
+            // Clear previous render
+            arrayContainer.innerHTML = '';
+            tree.innerHTML = '';
+            arrayBars = [];
+            treeNodes = [];
+            treeEdges = [];
+            
+            // Create array representation
+            for (let i = 0; i < array.length; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'array-bar';
+                bar.style.height = `${array[i]}%`;
+                
+                const valueLabel = document.createElement('div');
+                valueLabel.className = 'array-bar value';
+                valueLabel.textContent = array[i];
+                bar.appendChild(valueLabel);
+                
+                arrayContainer.appendChild(bar);
+                arrayBars.push(bar);
+            }
+            
+            // Create tree representation
+            const nodeSize = 50;
+            const levelHeight = 100;
+            const containerWidth = document.querySelector('.tree-container').clientWidth;
+            
+            // Calculate tree levels
+            const levels = [];
+            let level = 0;
+            let levelStart = 0;
+            
+            while (levelStart < array.length) {
+                const levelSize = Math.pow(2, level);
+                const levelEnd = Math.min(levelStart + levelSize, array.length);
+                levels.push(array.slice(levelStart, levelEnd));
+                levelStart = levelEnd;
+                level++;
+            }
+            
+            // Calculate positions and create nodes
+            levels.forEach((levelNodes, levelIndex) => {
+                const yPos = levelIndex * levelHeight;
+                const levelWidth = Math.pow(2, levelIndex) * nodeSize;
+                const startX = (containerWidth - levelWidth) / 2 + nodeSize / 2;
+                
+                levelNodes.forEach((value, nodeIndex) => {
+                    const xPos = startX + nodeIndex * (levelWidth / levelNodes.length);
+                    const node = document.createElement('div');
+                    node.className = 'tree-node';
+                    node.textContent = value;
+                    node.dataset.index = Math.pow(2, levelIndex) - 1 + nodeIndex;
+                    node.style.left = `${xPos - nodeSize/2}px`;
+                    node.style.top = `${yPos}px`;
+                    tree.appendChild(node);
+                    treeNodes.push(node);
+                    
+                    // Create edges to children if they exist
+                    if (levelIndex > 0) {
+                        const parentLevel = levelIndex - 1;
+                        const parentIndex = Math.floor(nodeIndex / 2);
+                        const parentPos = Math.pow(2, parentLevel) - 1 + parentIndex;
+                        
+                        if (treeNodes[parentPos]) {
+                            const edge = document.createElement('div');
+                            edge.className = 'tree-edge';
+                            
+                            // Calculate edge position and rotation
+                            const parentX = parseFloat(treeNodes[parentPos].style.left) + nodeSize/2;
+                            const parentY = parseFloat(treeNodes[parentPos].style.top) + nodeSize;
+                            const childX = xPos;
+                            const childY = yPos;
+                            
+                            const length = Math.sqrt(Math.pow(childX - parentX, 2) + Math.pow(childY - parentY, 2));
+                            const angle = Math.atan2(childY - parentY, childX - parentX) * 180 / Math.PI;
+                            
+                            edge.style.width = `${length}px`;
+                            edge.style.left = `${parentX}px`;
+                            edge.style.top = `${parentY}px`;
+                            edge.style.transform = `rotate(${angle}deg)`;
+                            
+                            tree.appendChild(edge);
+                            treeEdges.push(edge);
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('comparisons').textContent = comparisons;
+            document.getElementById('swaps').textContent = swaps;
+            document.getElementById('steps').textContent = steps;
+        }
+        
+        // Reset statistics
+        function resetStats() {
+            comparisons = 0;
+            swaps = 0;
+            steps = 0;
+            updateStats();
+        }
+        
+        // Reset the visualization
+        function reset() {
+            if (isBuilding) {
+                clearTimeout(timeoutId);
+                isBuilding = false;
+                isPaused = false;
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+                document.getElementById('pauseBtn').classList.remove('btn-secondary');
+                document.getElementById('pauseBtn').classList.add('btn-highlight');
+                document.getElementById('nextStepBtn').disabled = true;
+                
+                // Re-enable controls
+                document.querySelectorAll('.controls button:not(#nextStepBtn)').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+            generateRandomArray();
+        }
+        
+        // Pause or resume the building process
+        function pauseResume() {
+            if (!isBuilding) return;
+            
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (isPaused) {
+                clearTimeout(timeoutId);
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                pauseBtn.classList.remove('btn-highlight');
+                pauseBtn.classList.add('btn-secondary');
+                document.getElementById('nextStepBtn').disabled = false;
+            } else {
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                pauseBtn.classList.remove('btn-secondary');
+                pauseBtn.classList.add('btn-highlight');
+                document.getElementById('nextStepBtn').disabled = true;
+                processNextStep();
+            }
+        }
+        
+        // Move to next step when in step-by-step mode
+        function nextStep() {
+            if (!isPaused || !isBuilding) return;
+            processNextStep();
+        }
+        
+        // Start the heap construction
+        function startHeapConstruction() {
+            if (isBuilding) return;
+            
+            isBuilding = true;
+            isPaused = false;
+            currentStep = 0;
+            heapConstructionSteps = [];
+            resetStats();
+            
+            // Disable controls during building
+            document.querySelectorAll('.controls button:not(#pauseBtn):not(#nextStepBtn)').forEach(btn => {
+                btn.disabled = true;
+            });
+            document.getElementById('nextStepBtn').disabled = true;
+            
+            // Create a copy of the array for heap construction
+            const heapArray = [...array];
+            
+            // Generate all heap construction steps
+            generateHeapConstructionSteps(heapArray);
+            
+            // Start processing steps
+            processNextStep();
+        }
+        
+        // Generate all steps for heap construction
+        function generateHeapConstructionSteps(arr) {
+            const n = arr.length;
+            
+            // Start from last non-leaf node and heapify each node
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                heapConstructionSteps.push({
+                    type: 'startHeapify',
+                    index: i,
+                    message: `Starting heapify at index ${i} (value: ${arr[i]})`
+                });
+                
+                generateHeapifySteps(arr, n, i);
+            }
+            
+            heapConstructionSteps.push({
+                type: 'complete',
+                message: 'Min Heap construction completed!'
+            });
+        }
+        
+        // Generate steps for heapify process
+        function generateHeapifySteps(arr, n, i) {
+            let smallest = i;
+            const left = 2 * i + 1;
+            const right = 2 * i + 2;
+            
+            // Compare with left child
+            if (left < n) {
+                heapConstructionSteps.push({
+                    type: 'compare',
+                    indices: [i, left],
+                    message: `Comparing ${arr[i]} with left child ${arr[left]}`
+                });
+                
+                if (arr[left] < arr[smallest]) {
+                    smallest = left;
+                    heapConstructionSteps.push({
+                        type: 'newSmallest',
+                        index: left,
+                        message: `New smallest found: ${arr[left]} (left child)`
+                    });
+                }
+            }
+            
+            // Compare with right child
+            if (right < n) {
+                heapConstructionSteps.push({
+                    type: 'compare',
+                    indices: [smallest, right],
+                    message: `Comparing current smallest ${arr[smallest]} with right child ${arr[right]}`
+                });
+                
+                if (arr[right] < arr[smallest]) {
+                    smallest = right;
+                    heapConstructionSteps.push({
+                        type: 'newSmallest',
+                        index: right,
+                        message: `New smallest found: ${arr[right]} (right child)`
+                    });
+                }
+            }
+            
+            // If smallest is not the current node, swap and continue heapifying
+            if (smallest !== i) {
+                heapConstructionSteps.push({
+                    type: 'swap',
+                    indices: [i, smallest],
+                    message: `Swapping ${arr[i]} with ${arr[smallest]}`
+                });
+                
+                [arr[i], arr[smallest]] = [arr[smallest], arr[i]];
+                
+                heapConstructionSteps.push({
+                    type: 'continueHeapify',
+                    index: smallest,
+                    message: `Continuing heapify at index ${smallest}`
+                });
+                
+                generateHeapifySteps(arr, n, smallest);
+            }
+            
+            heapConstructionSteps.push({
+                type: 'endHeapify',
+                index: i,
+                message: `Heapify complete at index ${i}`
+            });
+        }
+        
+        // Process the next step in heap construction
+        function processNextStep() {
+            if (currentStep >= heapConstructionSteps.length) {
+                // Construction complete
+                isBuilding = false;
+                
+                // Re-enable controls
+                document.querySelectorAll('.controls button').forEach(btn => {
+                    btn.disabled = false;
+                });
+                document.getElementById('nextStepBtn').disabled = true;
+                
+                return;
+            }
+            
+            const step = heapConstructionSteps[currentStep];
+            currentStep++;
+            steps++;
+            updateStats();
+            
+            // Update explanation
+            document.getElementById('explanation').innerHTML = `
+                <h3>Step ${currentStep}/${heapConstructionSteps.length}</h3>
+                <p><strong>${step.message}</strong></p>
+                <p>${getStepDetails(step)}</p>
+            `;
+            
+            // Process step based on type
+            switch (step.type) {
+                case 'startHeapify':
+                    visualizeProcessingNode(step.index, true);
+                    break;
+                    
+                case 'compare':
+                    comparisons++;
+                    updateStats();
+                    visualizeComparison(step.indices[0], step.indices[1]);
+                    break;
+                    
+                case 'newSmallest':
+                    visualizeNewSmallest(step.index);
+                    break;
+                    
+                case 'swap':
+                    swaps++;
+                    updateStats();
+                    visualizeSwap(step.indices[0], step.indices[1]);
+                    break;
+                    
+                case 'continueHeapify':
+                    visualizeProcessingNode(step.index, true);
+                    break;
+                    
+                case 'endHeapify':
+                    visualizeProcessingNode(step.index, false);
+                    visualizeHeapNode(step.index, true);
+                    break;
+                    
+                case 'complete':
+                    visualizeComplete();
+                    break;
+            }
+            
+            // If not paused, continue to next step automatically
+            if (!isPaused) {
+                timeoutId = setTimeout(processNextStep, animationSpeed * 3);
+            }
+        }
+        
+        // Get detailed explanation for each step
+        function getStepDetails(step) {
+            switch (step.type) {
+                case 'startHeapify':
+                    return `Beginning heapify process at node ${step.index} (value: ${array[step.index]}). 
+                            This ensures the subtree rooted at this node satisfies the min heap property.`;
+                    
+                case 'compare':
+                    return `Comparing values at indices ${step.indices[0]} (${array[step.indices[0]]}) and 
+                            ${step.indices[1]} (${array[step.indices[1]]}) to find the smallest value.`;
+                    
+                case 'newSmallest':
+                    return `The value at index ${step.index} (${array[step.index]}) is now the smallest in this comparison.`;
+                    
+                case 'swap':
+                    return `Swapping values at indices ${step.indices[0]} (${array[step.indices[0]]}) and 
+                            ${step.indices[1]} (${array[step.indices[1]]}) to maintain min heap property.`;
+                    
+                case 'continueHeapify':
+                    return `Continuing heapify process at the new position ${step.index} (value: ${array[step.index]}).`;
+                    
+                case 'endHeapify':
+                    return `Heapify process completed for node ${step.index}. The subtree now satisfies the min heap property.`;
+                    
+                case 'complete':
+                    return `The entire array now satisfies the min heap property. Each parent node is smaller than its children.`;
+                    
+                default:
+                    return '';
+            }
+        }
+        
+        // Animation helper functions
+        function visualizeProcessingNode(index, isProcessing) {
+            arrayBars[index].classList.toggle('processing', isProcessing);
+            if (treeNodes[index]) {
+                treeNodes[index].classList.toggle('processing', isProcessing);
+            }
+        }
+        
+        function visualizeComparison(index1, index2) {
+            // Highlight comparing elements
+            arrayBars[index1].classList.add('comparing');
+            arrayBars[index2].classList.add('comparing');
+            if (treeNodes[index1] && treeNodes[index2]) {
+                treeNodes[index1].classList.add('comparing');
+                treeNodes[index2].classList.add('comparing');
+            }
+            
+            // Automatically remove highlight after delay
+            setTimeout(() => {
+                arrayBars[index1].classList.remove('comparing');
+                arrayBars[index2].classList.remove('comparing');
+                if (treeNodes[index1] && treeNodes[index2]) {
+                    treeNodes[index1].classList.remove('comparing');
+                    treeNodes[index2].classList.remove('comparing');
+                }
+            }, animationSpeed * 2);
+        }
+        
+        function visualizeNewSmallest(index) {
+            // Highlight the new smallest element
+            arrayBars[index].classList.add('heap-node');
+            if (treeNodes[index]) {
+                treeNodes[index].classList.add('heap-node');
+            }
+            
+            // Automatically remove highlight after delay
+            setTimeout(() => {
+                arrayBars[index].classList.remove('heap-node');
+                if (treeNodes[index]) {
+                    treeNodes[index].classList.remove('heap-node');
+                }
+            }, animationSpeed * 2);
+        }
+        
+        function visualizeSwap(index1, index2) {
+            // Highlight swapping elements
+            arrayBars[index1].classList.add('swapping');
+            arrayBars[index2].classList.add('swapping');
+            if (treeNodes[index1] && treeNodes[index2]) {
+                treeNodes[index1].classList.add('swapping');
+                treeNodes[index2].classList.add('swapping');
+            }
+            
+            // Swap values in array visualization
+            const height1 = arrayBars[index1].style.height;
+            const height2 = arrayBars[index2].style.height;
+            
+            // Animate the swap
+            animateSwap(index1, index2, height1, height2);
+            
+            // Update actual array
+            [array[index1], array[index2]] = [array[index2], array[index1]];
+        }
+        
+        function animateSwap(index1, index2, height1, height2) {
+            // For array bars
+            arrayBars[index1].style.transition = `height ${animationSpeed/1000}s ease`;
+            arrayBars[index2].style.transition = `height ${animationSpeed/1000}s ease`;
+            
+            // First move both to midpoint
+            setTimeout(() => {
+                arrayBars[index1].style.height = `${(parseInt(height1) + parseInt(height2))/2}%`;
+                arrayBars[index2].style.height = `${(parseInt(height1) + parseInt(height2))/2}%`;
+                
+                // Then move to final positions
+                setTimeout(() => {
+                    arrayBars[index1].style.height = height2;
+                    arrayBars[index2].style.height = height1;
+                    
+                    // Update value labels
+                    const value1 = arrayBars[index1].querySelector('.array-bar.value').textContent;
+                    const value2 = arrayBars[index2].querySelector('.array-bar.value').textContent;
+                    arrayBars[index1].querySelector('.array-bar.value').textContent = value2;
+                    arrayBars[index2].querySelector('.array-bar.value').textContent = value1;
+                    
+                    // For tree nodes
+                    if (treeNodes[index1] && treeNodes[index2]) {
+                        const node1 = treeNodes[index1];
+                        const node2 = treeNodes[index2];
+                        
+                        // Get positions
+                        const x1 = parseFloat(node1.style.left);
+                        const y1 = parseFloat(node1.style.top);
+                        const x2 = parseFloat(node2.style.left);
+                        const y2 = parseFloat(node2.style.top);
+                        
+                        // Animate movement
+                        node1.style.transition = `left ${animationSpeed/1000}s ease, top ${animationSpeed/1000}s ease`;
+                        node2.style.transition = `left ${animationSpeed/1000}s ease, top ${animationSpeed/1000}s ease`;
+                        
+                        // Move to each other's positions
+                        node1.style.left = `${x2}px`;
+                        node1.style.top = `${y2}px`;
+                        node2.style.left = `${x1}px`;
+                        node2.style.top = `${y1}px`;
+                        
+                        // Swap their positions in the treeNodes array after animation
+                        setTimeout(() => {
+                            // Swap values
+                            const temp = node1.textContent;
+                            node1.textContent = node2.textContent;
+                            node2.textContent = temp;
+                            
+                            // Return to original positions (but with swapped values)
+                            node1.style.left = `${x1}px`;
+                            node1.style.top = `${y1}px`;
+                            node2.style.left = `${x2}px`;
+                            node2.style.top = `${y2}px`;
+                            
+                            // Remove highlight
+                            setTimeout(() => {
+                                arrayBars[index1].classList.remove('swapping');
+                                arrayBars[index2].classList.remove('swapping');
+                                node1.classList.remove('swapping');
+                                node2.classList.remove('swapping');
+                                
+                                // Reset transitions
+                                arrayBars[index1].style.transition = '';
+                                arrayBars[index2].style.transition = '';
+                                node1.style.transition = '';
+                                node2.style.transition = '';
+                            }, animationSpeed * 2);
+                        }, animationSpeed * 2);
+                    } else {
+                        // Just remove highlight if no tree nodes
+                        setTimeout(() => {
+                            arrayBars[index1].classList.remove('swapping');
+                            arrayBars[index2].classList.remove('swapping');
+                        }, animationSpeed * 2);
+                    }
+                }, animationSpeed * 2);
+            }, 0);
+        }
+        
+        function visualizeHeapNode(index, isHeapNode) {
+            arrayBars[index].classList.toggle('heap-node', isHeapNode);
+            if (treeNodes[index]) {
+                treeNodes[index].classList.toggle('heap-node', isHeapNode);
+            }
+        }
+        
+        function visualizeComplete() {
+            // Mark all nodes as heap nodes
+            arrayBars.forEach(bar => bar.classList.add('heap-node'));
+            treeNodes.forEach(node => node.classList.add('heap-node'));
+            
+            // Add celebration effect
+            treeNodes[0].classList.add('processing');
+            setTimeout(() => {
+                treeNodes[0].classList.remove('processing');
+            }, 1000);
+        }
+        
+        // Set up event listeners
+        document.getElementById('speed').addEventListener('input', function() {
+            animationSpeed = 101 - this.value; // Invert so higher value = faster
+        });
+        
+        document.getElementById('size').addEventListener('input', function() {
+            if (!isBuilding) {
+                generateRandomArray();
+            }
+        });
+        
+        // Initialize
+        generateRandomArray();
+    </script>
+</body>
+</html>

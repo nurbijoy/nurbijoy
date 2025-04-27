@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Visualization</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --highlight: #e74c3c;
+            --node: #f39c12;
+            --background: #f8f9fa;
+            --text: #2c3e50;
+            --swap: #1abc9c;
+            --edge: #95a5a6;
+            --traversal: #9b59b6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-highlight {
+            background-color: var(--highlight);
+            color: white;
+        }
+
+        .btn-traversal {
+            background-color: var(--traversal);
+            color: white;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .tree-container {
+            width: 100%;
+            overflow: auto;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-height: 400px;
+            position: relative;
+        }
+
+        .tree {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .node {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--node);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: absolute;
+            transition: all 0.5s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .node.highlight {
+            background-color: var(--highlight);
+            box-shadow: 0 0 15px var(--highlight);
+            transform: scale(1.1);
+        }
+
+        .node.traversed {
+            background-color: var(--traversal);
+        }
+
+        .node.null {
+            background-color: #95a5a6;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .tree-edge {
+            position: absolute;
+            background-color: var(--edge);
+            height: 2px;
+            transform-origin: 0 0;
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .traversal-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--traversal);
+        }
+
+        .traversal-path {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .traversal-step {
+            background-color: var(--traversal);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .traversal-step.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--traversal);
+        }
+
+        .code-snippet {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stats {
+                justify-content: space-around;
+            }
+            
+            .node {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Binary Search Tree Visualization</h1>
+        
+        <div class="controls">
+            <input type="number" id="nodeValue" placeholder="Enter a number" min="1" max="999">
+            <button class="btn-primary" onclick="insertNode()">
+                <i class="fas fa-plus"></i> Insert
+            </button>
+            <button class="btn-highlight" onclick="deleteNode()">
+                <i class="fas fa-minus"></i> Delete
+            </button>
+            <button class="btn-secondary" onclick="findNode()">
+                <i class="fas fa-search"></i> Find
+            </button>
+            <button onclick="clearTree()">
+                <i class="fas fa-trash"></i> Clear
+            </button>
+            <button class="btn-traversal" onclick="traverseInOrder()">
+                <i class="fas fa-project-diagram"></i> In-Order
+            </button>
+            <button class="btn-traversal" onclick="traversePreOrder()">
+                <i class="fas fa-project-diagram"></i> Pre-Order
+            </button>
+            <button class="btn-traversal" onclick="traversePostOrder()">
+                <i class="fas fa-project-diagram"></i> Post-Order
+            </button>
+            <button onclick="generateRandomTree()">
+                <i class="fas fa-random"></i> Random
+            </button>
+        </div>
+        
+        <div class="info-panel">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--node);"></div>
+                    <span>Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--highlight);"></div>
+                    <span>Highlighted</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--traversal);"></div>
+                    <span>Traversal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #95a5a6;"></div>
+                    <span>Null</span>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="treeHeight">0</div>
+                    <div class="stat-label">Height</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="nodeCount">0</div>
+                    <div class="stat-label">Nodes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="balanceFactor">0</div>
+                    <div class="stat-label">Balance</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tree-container">
+            <div id="tree" class="tree"></div>
+        </div>
+        
+        <div id="traversalResult" class="traversal-result" style="display: none;">
+            <h3 id="traversalTitle">Traversal Result</h3>
+            <div id="traversalPath" class="traversal-path"></div>
+        </div>
+        
+        <div class="code-snippet">
+            <pre>class Node {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BST {
+    constructor() {
+        this.root = null;
+    }
+    
+    insert(value) {
+        const newNode = new Node(value);
+        if (this.root === null) {
+            this.root = newNode;
+        } else {
+            this.insertNode(this.root, newNode);
+        }
+    }
+    
+    insertNode(node, newNode) {
+        if (newNode.value < node.value) {
+            if (node.left === null) {
+                node.left = newNode;
+            } else {
+                this.insertNode(node.left, newNode);
+            }
+        } else {
+            if (node.right === null) {
+                node.right = newNode;
+            } else {
+                this.insertNode(node.right, newNode);
+            }
+        }
+    }
+    
+    // Other methods omitted for brevity
+}</pre>
+        </div>
+    </div>
+
+    <script>
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        class BST {
+            constructor() {
+                this.root = null;
+                this.animationSpeed = 500;
+            }
+            
+            setAnimationSpeed(speed) {
+                this.animationSpeed = 1010 - (speed * 10); // Convert 1-100 to 10-1010ms
+            }
+            
+            insert(value) {
+                const newNode = new Node(value);
+                if (this.root === null) {
+                    this.root = newNode;
+                } else {
+                    this.insertNode(this.root, newNode);
+                }
+                this.updateVisualization();
+            }
+            
+            insertNode(node, newNode) {
+                if (newNode.value < node.value) {
+                    if (node.left === null) {
+                        node.left = newNode;
+                    } else {
+                        this.insertNode(node.left, newNode);
+                    }
+                } else {
+                    if (node.right === null) {
+                        node.right = newNode;
+                    } else {
+                        this.insertNode(node.right, newNode);
+                    }
+                }
+            }
+            
+            delete(value) {
+                this.root = this.deleteNode(this.root, value);
+                this.updateVisualization();
+            }
+            
+            deleteNode(node, value) {
+                if (node === null) {
+                    return null;
+                }
+                
+                if (value < node.value) {
+                    node.left = this.deleteNode(node.left, value);
+                    return node;
+                } else if (value > node.value) {
+                    node.right = this.deleteNode(node.right, value);
+                    return node;
+                } else {
+                    // Node with no children
+                    if (node.left === null && node.right === null) {
+                        return null;
+                    }
+                    
+                    // Node with one child
+                    if (node.left === null) {
+                        return node.right;
+                    } else if (node.right === null) {
+                        return node.left;
+                    }
+                    
+                    // Node with two children
+                    const minRight = this.findMinNode(node.right);
+                    node.value = minRight.value;
+                    node.right = this.deleteNode(node.right, minRight.value);
+                    return node;
+                }
+            }
+            
+            findMinNode(node) {
+                if (node.left === null) {
+                    return node;
+                } else {
+                    return this.findMinNode(node.left);
+                }
+            }
+            
+            find(value) {
+                const foundNode = this.findNode(this.root, value);
+                if (foundNode) {
+                    this.highlightNode(foundNode);
+                    setTimeout(() => {
+                        this.removeHighlight(foundNode);
+                    }, 2000);
+                    return true;
+                }
+                alert("Node not found!");
+                return false;
+            }
+            
+            findNode(node, value) {
+                if (node === null) {
+                    return null;
+                }
+                
+                if (value < node.value) {
+                    return this.findNode(node.left, value);
+                } else if (value > node.value) {
+                    return this.findNode(node.right, value);
+                } else {
+                    return node;
+                }
+            }
+            
+            highlightNode(node) {
+                const elements = document.querySelectorAll('.node:not(.null)');
+                elements.forEach(el => {
+                    if (parseInt(el.textContent) === node.value) {
+                        el.classList.add('highlight');
+                    }
+                });
+            }
+            
+            removeHighlight(node) {
+                const elements = document.querySelectorAll('.node');
+                elements.forEach(el => {
+                    if (parseInt(el.textContent) === node.value) {
+                        el.classList.remove('highlight');
+                    }
+                });
+            }
+            
+            clear() {
+                this.root = null;
+                this.updateVisualization();
+            }
+            
+            getHeight(node = this.root) {
+                if (node === null) {
+                    return 0;
+                }
+                const leftHeight = this.getHeight(node.left);
+                const rightHeight = this.getHeight(node.right);
+                return Math.max(leftHeight, rightHeight) + 1;
+            }
+            
+            getNodeCount(node = this.root) {
+                if (node === null) {
+                    return 0;
+                }
+                return 1 + this.getNodeCount(node.left) + this.getNodeCount(node.right);
+            }
+            
+            getBalanceFactor(node = this.root) {
+                if (node === null) {
+                    return 0;
+                }
+                return this.getHeight(node.left) - this.getHeight(node.right);
+            }
+            
+            async inOrderTraversal(node = this.root, result = []) {
+                if (node !== null) {
+                    await this.inOrderTraversal(node.left, result);
+                    await this.visualizeTraversal(node);
+                    result.push(node.value);
+                    await this.inOrderTraversal(node.right, result);
+                }
+                return result;
+            }
+            
+            async preOrderTraversal(node = this.root, result = []) {
+                if (node !== null) {
+                    await this.visualizeTraversal(node);
+                    result.push(node.value);
+                    await this.preOrderTraversal(node.left, result);
+                    await this.preOrderTraversal(node.right, result);
+                }
+                return result;
+            }
+            
+            async postOrderTraversal(node = this.root, result = []) {
+                if (node !== null) {
+                    await this.postOrderTraversal(node.left, result);
+                    await this.postOrderTraversal(node.right, result);
+                    await this.visualizeTraversal(node);
+                    result.push(node.value);
+                }
+                return result;
+            }
+            
+            async visualizeTraversal(node) {
+                return new Promise(resolve => {
+                    const elements = document.querySelectorAll('.node:not(.null)');
+                    elements.forEach(el => {
+                        if (parseInt(el.textContent) === node.value) {
+                            el.classList.add('traversed');
+                            
+                            // Update traversal path display
+                            const traversalPath = document.getElementById('traversalPath');
+                            const step = document.createElement('div');
+                            step.className = 'traversal-step';
+                            step.textContent = node.value;
+                            traversalPath.appendChild(step);
+                            
+                            // Highlight the current step
+                            setTimeout(() => {
+                                step.classList.add('active');
+                            }, 10);
+                            
+                            setTimeout(() => {
+                                step.classList.remove('active');
+                                resolve();
+                            }, this.animationSpeed);
+                        }
+                    });
+                });
+            }
+            
+            updateVisualization() {
+                document.getElementById('treeHeight').textContent = this.getHeight();
+                document.getElementById('nodeCount').textContent = this.getNodeCount();
+                document.getElementById('balanceFactor').textContent = this.getBalanceFactor();
+                this.renderTree();
+            }
+            
+            renderTree() {
+                const treeElement = document.getElementById('tree');
+                treeElement.innerHTML = '';
+                
+                if (this.root === null) {
+                    treeElement.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Tree is empty</p>';
+                    document.getElementById('traversalResult').style.display = 'none';
+                    return;
+                }
+                
+                const nodeSize = 50;
+                const levelHeight = 100;
+                const containerWidth = document.querySelector('.tree-container').clientWidth;
+                
+                // Calculate positions for all nodes
+                const positions = this.calculateNodePositions(this.root, containerWidth/2, 50, containerWidth/4);
+                
+                // Create nodes
+                positions.forEach(pos => {
+                    const node = pos.node;
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node';
+                    nodeElement.textContent = node.value;
+                    nodeElement.style.left = `${pos.x}px`;
+                    nodeElement.style.top = `${pos.y}px`;
+                    treeElement.appendChild(nodeElement);
+                    
+                    // Create edges to children
+                    if (node.left) {
+                        const leftPos = positions.find(p => p.node === node.left);
+                        if (leftPos) {
+                            this.createEdge(pos.x + nodeSize/2, pos.y + nodeSize/2, 
+                                          leftPos.x + nodeSize/2, leftPos.y + nodeSize/2);
+                        }
+                    }
+                    
+                    if (node.right) {
+                        const rightPos = positions.find(p => p.node === node.right);
+                        if (rightPos) {
+                            this.createEdge(pos.x + nodeSize/2, pos.y + nodeSize/2, 
+                                          rightPos.x + nodeSize/2, rightPos.y + nodeSize/2);
+                        }
+                    }
+                });
+            }
+            
+            calculateNodePositions(node, x, y, xOffset) {
+                if (!node) return [];
+                
+                const positions = [{
+                    node: node,
+                    x: x - 25, // Adjust for node width
+                    y: y
+                }];
+                
+                if (node.left) {
+                    positions.push(...this.calculateNodePositions(
+                        node.left, x - xOffset, y + levelHeight, xOffset/2
+                    ));
+                }
+                
+                if (node.right) {
+                    positions.push(...this.calculateNodePositions(
+                        node.right, x + xOffset, y + levelHeight, xOffset/2
+                    ));
+                }
+                
+                return positions;
+            }
+            
+            createEdge(x1, y1, x2, y2) {
+                const treeElement = document.getElementById('tree');
+                const edge = document.createElement('div');
+                edge.className = 'tree-edge';
+                
+                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                
+                edge.style.width = `${length}px`;
+                edge.style.left = `${x1}px`;
+                edge.style.top = `${y1}px`;
+                edge.style.transform = `rotate(${angle}deg)`;
+                
+                treeElement.appendChild(edge);
+            }
+            
+            generateRandomTree(count = 10, max = 100) {
+                this.clear();
+                const values = new Set();
+                while (values.size < count) {
+                    values.add(Math.floor(Math.random() * max) + 1);
+                }
+                values.forEach(value => this.insert(value));
+            }
+        }
+
+        const bst = new BST();
+        const levelHeight = 100; // Used in calculateNodePositions
+
+        function insertNode() {
+            const value = parseInt(document.getElementById('nodeValue').value);
+            if (!isNaN(value)) {
+                bst.insert(value);
+                document.getElementById('nodeValue').value = '';
+            } else {
+                alert('Please enter a valid number');
+            }
+        }
+
+        function deleteNode() {
+            const value = parseInt(document.getElementById('nodeValue').value);
+            if (!isNaN(value)) {
+                bst.delete(value);
+                document.getElementById('nodeValue').value = '';
+            } else {
+                alert('Please enter a valid number');
+            }
+        }
+
+        function findNode() {
+            const value = parseInt(document.getElementById('nodeValue').value);
+            if (!isNaN(value)) {
+                bst.find(value);
+                document.getElementById('nodeValue').value = '';
+            } else {
+                alert('Please enter a valid number');
+            }
+        }
+
+        function clearTree() {
+            bst.clear();
+        }
+
+        async function traverseInOrder() {
+            document.getElementById('traversalResult').style.display = 'block';
+            document.getElementById('traversalTitle').textContent = 'In-Order Traversal';
+            document.getElementById('traversalPath').innerHTML = '';
+            
+            const result = await bst.inOrderTraversal();
+            console.log('In-Order:', result);
+        }
+
+        async function traversePreOrder() {
+            document.getElementById('traversalResult').style.display = 'block';
+            document.getElementById('traversalTitle').textContent = 'Pre-Order Traversal';
+            document.getElementById('traversalPath').innerHTML = '';
+            
+            const result = await bst.preOrderTraversal();
+            console.log('Pre-Order:', result);
+        }
+
+        async function traversePostOrder() {
+            document.getElementById('traversalResult').style.display = 'block';
+            document.getElementById('traversalTitle').textContent = 'Post-Order Traversal';
+            document.getElementById('traversalPath').innerHTML = '';
+            
+            const result = await bst.postOrderTraversal();
+            console.log('Post-Order:', result);
+        }
+
+        function generateRandomTree() {
+            bst.generateRandomTree();
+        }
+
+        // Initialize with some values
+        bst.insert(50);
+        bst.insert(30);
+        bst.insert(70);
+        bst.insert(20);
+        bst.insert(40);
+        bst.insert(60);
+        bst.insert(80);
+
+        // Set animation speed from slider
+        document.getElementById('speed').addEventListener('input', function() {
+            bst.setAnimationSpeed(this.value);
+        });
+    </script>
+</body>
+</html>

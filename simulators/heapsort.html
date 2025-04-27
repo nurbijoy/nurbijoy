@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort Visualization</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --highlight: #e74c3c;
+            --heap-node: #f39c12;
+            --sorted: #9b59b6;
+            --background: #f8f9fa;
+            --text: #2c3e50;
+            --swap: #1abc9c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-highlight {
+            background-color: var(--highlight);
+            color: white;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 300px;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .array-bar {
+            flex: 1;
+            margin: 0 2px;
+            background-color: var(--primary);
+            transition: height 0.3s, background-color 0.3s;
+            position: relative;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .array-bar.comparing {
+            background-color: var(--highlight);
+        }
+
+        .array-bar.sorted {
+            background-color: var(--sorted);
+        }
+
+        .array-bar.heap-node {
+            background-color: var(--heap-node);
+        }
+
+        .array-bar.swapping {
+            background-color: var(--swap);
+        }
+
+        .array-bar.value {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .speed-control input {
+            width: 100px;
+        }
+
+        .code-snippet {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .stats {
+                justify-content: space-around;
+            }
+            
+            .array-bar {
+                margin: 0 1px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Heap Sort Visualization</h1>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="generateNewArray()">
+                <i class="fas fa-random"></i> New Array
+            </button>
+            <button class="btn-secondary" onclick="startHeapSort()">
+                <i class="fas fa-play"></i> Start Heap Sort
+            </button>
+            <button class="btn-highlight" onclick="pauseResume()" id="pauseBtn">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button onclick="reset()">
+                <i class="fas fa-sync-alt"></i> Reset
+            </button>
+            <div class="speed-control">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="50">
+            </div>
+            <div class="speed-control">
+                <label for="size">Array Size:</label>
+                <input type="range" id="size" min="5" max="50" value="20">
+            </div>
+        </div>
+        
+        <div class="array-container" id="arrayContainer"></div>
+        
+        <div class="info-panel">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--primary);"></div>
+                    <span>Normal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--heap-node);"></div>
+                    <span>Heap Node</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--highlight);"></div>
+                    <span>Comparing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--swap);"></div>
+                    <span>Swapping</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--sorted);"></div>
+                    <span>Sorted</span>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="comparisons">0</div>
+                    <div class="stat-label">Comparisons</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="swaps">0</div>
+                    <div class="stat-label">Swaps</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="time">0</div>
+                    <div class="stat-label">ms</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="code-snippet">
+            <pre>function heapSort(arr) {
+    // Build max heap
+    for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
+        heapify(arr, arr.length, i);
+    }
+
+    // Extract elements from heap one by one
+    for (let i = arr.length - 1; i > 0; i--) {
+        // Move current root to end
+        swap(arr, 0, i);
+        
+        // Call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+function heapify(arr, n, i) {
+    let largest = i;
+    let left = 2 * i + 1;
+    let right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    if (largest !== i) {
+        swap(arr, i, largest);
+        heapify(arr, n, largest);
+    }
+}</pre>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let array = [];
+        let arrayBars = [];
+        let arraySize = 20;
+        let animationSpeed = 50;
+        let isSorting = false;
+        let isPaused = false;
+        let animationQueue = [];
+        let comparisons = 0;
+        let swaps = 0;
+        let startTime = 0;
+        let timeoutId = null;
+        
+        // Initialize the array visualization
+        function generateNewArray() {
+            if (isSorting) return;
+            
+            arraySize = parseInt(document.getElementById('size').value);
+            array = [];
+            arrayBars = [];
+            
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+            
+            // Generate random array
+            for (let i = 0; i < arraySize; i++) {
+                array.push(Math.floor(Math.random() * 90) + 10); // Values between 10-100
+            }
+            
+            // Create bars for each array element
+            for (let i = 0; i < array.length; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'array-bar';
+                bar.style.height = `${array[i]}%`;
+                
+                const valueLabel = document.createElement('div');
+                valueLabel.className = 'array-bar value';
+                valueLabel.textContent = array[i];
+                bar.appendChild(valueLabel);
+                
+                container.appendChild(bar);
+                arrayBars.push(bar);
+            }
+            
+            resetStats();
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('comparisons').textContent = comparisons;
+            document.getElementById('swaps').textContent = swaps;
+            document.getElementById('time').textContent = isSorting ? 
+                Math.round(performance.now() - startTime) : 0;
+        }
+        
+        // Reset statistics
+        function resetStats() {
+            comparisons = 0;
+            swaps = 0;
+            updateStats();
+        }
+        
+        // Reset the visualization
+        function reset() {
+            if (isSorting) {
+                clearTimeout(timeoutId);
+                isSorting = false;
+                isPaused = false;
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+                document.getElementById('pauseBtn').classList.remove('btn-secondary');
+                document.getElementById('pauseBtn').classList.add('btn-highlight');
+                
+                // Re-enable controls
+                document.querySelectorAll('.controls button').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+            generateNewArray();
+        }
+        
+        // Pause or resume the sorting
+        function pauseResume() {
+            if (!isSorting) return;
+            
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (isPaused) {
+                clearTimeout(timeoutId);
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                pauseBtn.classList.remove('btn-highlight');
+                pauseBtn.classList.add('btn-secondary');
+            } else {
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                pauseBtn.classList.remove('btn-secondary');
+                pauseBtn.classList.add('btn-highlight');
+                processAnimationQueue();
+            }
+        }
+        
+        // Start the heap sort algorithm
+        function startHeapSort() {
+            if (isSorting) return;
+            
+            isSorting = true;
+            isPaused = false;
+            animationQueue = [];
+            resetStats();
+            startTime = performance.now();
+            
+            // Disable controls during sorting
+            document.querySelectorAll('.controls button:not(#pauseBtn)').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Create a copy of the array for sorting
+            const sortingArray = [...array];
+            
+            // Start the heap sort
+            heapSort(sortingArray).then(() => {
+                // Sorting complete
+                isSorting = false;
+                
+                // Re-enable controls
+                document.querySelectorAll('.controls button').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+                // Final update of time
+                updateStats();
+            });
+        }
+        
+        // Heap sort algorithm (with visualization steps)
+        async function heapSort(arr) {
+            // Build max heap
+            for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
+                await heapify(arr, arr.length, i);
+            }
+            
+            // One by one extract elements from heap
+            for (let i = arr.length - 1; i > 0; i--) {
+                // Visualize the heap structure before extraction
+                await visualizeHeapStructure(arr.length, i);
+                
+                // Move current root to end
+                await visualizeSwap(0, i);
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                swaps++;
+                updateStats();
+                
+                // Mark the sorted element
+                await markAsSorted(i);
+                
+                // Call max heapify on the reduced heap
+                await heapify(arr, i, 0);
+            }
+            
+            // Mark the last element as sorted
+            await markAsSorted(0);
+        }
+        
+        // To heapify a subtree rooted with node i which is an index in arr[]
+        async function heapify(arr, n, i) {
+            let largest = i;
+            const left = 2 * i + 1;
+            const right = 2 * i + 2;
+            
+            // Visualize the current node and its children
+            await visualizeHeapNode(i, n);
+            
+            // Compare with left child
+            if (left < n) {
+                await visualizeComparison(i, left);
+                comparisons++;
+                updateStats();
+                
+                if (arr[left] > arr[largest]) {
+                    largest = left;
+                }
+            }
+            
+            // Compare with right child
+            if (right < n) {
+                await visualizeComparison(i, right);
+                comparisons++;
+                updateStats();
+                
+                if (arr[right] > arr[largest]) {
+                    largest = right;
+                }
+            }
+            
+            // If largest is not root
+            if (largest !== i) {
+                await visualizeSwap(i, largest);
+                [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                swaps++;
+                updateStats();
+                
+                // Recursively heapify the affected sub-tree
+                await heapify(arr, n, largest);
+            }
+        }
+        
+        // Animation helper functions
+        function visualizeHeapNode(index, heapSize) {
+            return new Promise(resolve => {
+                animationQueue.push({
+                    type: 'heapNode',
+                    index,
+                    heapSize,
+                    resolve
+                });
+                
+                if (animationQueue.length === 1) {
+                    processAnimationQueue();
+                }
+            });
+        }
+        
+        function visualizeHeapStructure(heapSize, sortedBoundary) {
+            return new Promise(resolve => {
+                animationQueue.push({
+                    type: 'heapStructure',
+                    heapSize,
+                    sortedBoundary,
+                    resolve
+                });
+                
+                if (animationQueue.length === 1) {
+                    processAnimationQueue();
+                }
+            });
+        }
+        
+        function visualizeComparison(index1, index2) {
+            return new Promise(resolve => {
+                animationQueue.push({
+                    type: 'compare',
+                    indices: [index1, index2],
+                    resolve
+                });
+                
+                if (animationQueue.length === 1) {
+                    processAnimationQueue();
+                }
+            });
+        }
+        
+        function visualizeSwap(index1, index2) {
+            return new Promise(resolve => {
+                animationQueue.push({
+                    type: 'swap',
+                    indices: [index1, index2],
+                    resolve
+                });
+                
+                if (animationQueue.length === 1) {
+                    processAnimationQueue();
+                }
+            });
+        }
+        
+        function markAsSorted(index) {
+            return new Promise(resolve => {
+                animationQueue.push({
+                    type: 'sorted',
+                    index,
+                    resolve
+                });
+                
+                if (animationQueue.length === 1) {
+                    processAnimationQueue();
+                }
+            });
+        }
+        
+        // Process the animation queue
+        function processAnimationQueue() {
+            if (isPaused || animationQueue.length === 0) return;
+            
+            const animation = animationQueue[0];
+            
+            switch (animation.type) {
+                case 'heapNode':
+                    // Highlight the current heap node and its children
+                    arrayBars.forEach(bar => bar.classList.remove('heap-node'));
+                    if (animation.index < animation.heapSize) {
+                        arrayBars[animation.index].classList.add('heap-node');
+                    }
+                    const left = 2 * animation.index + 1;
+                    const right = 2 * animation.index + 2;
+                    if (left < animation.heapSize) arrayBars[left].classList.add('heap-node');
+                    if (right < animation.heapSize) arrayBars[right].classList.add('heap-node');
+                    
+                    timeoutId = setTimeout(() => {
+                        animation.resolve();
+                        animationQueue.shift();
+                        processAnimationQueue();
+                    }, animationSpeed * 1.5);
+                    break;
+                    
+                case 'heapStructure':
+                    // Visualize the heap structure and sorted portion
+                    arrayBars.forEach((bar, i) => {
+                        bar.classList.remove('heap-node', 'sorted');
+                        if (i < animation.heapSize) {
+                            bar.classList.add('heap-node');
+                        }
+                        if (i >= animation.sortedBoundary) {
+                            bar.classList.add('sorted');
+                        }
+                    });
+                    timeoutId = setTimeout(() => {
+                        animation.resolve();
+                        animationQueue.shift();
+                        processAnimationQueue();
+                    }, animationSpeed * 2);
+                    break;
+                    
+                case 'compare':
+                    // Highlight comparing elements
+                    arrayBars.forEach(bar => bar.classList.remove('comparing'));
+                    animation.indices.forEach(i => arrayBars[i].classList.add('comparing'));
+                    timeoutId = setTimeout(() => {
+                        arrayBars.forEach(bar => bar.classList.remove('comparing'));
+                        animation.resolve();
+                        animationQueue.shift();
+                        processAnimationQueue();
+                    }, animationSpeed);
+                    break;
+                    
+                case 'swap':
+                    // Perform swap animation
+                    const [i, j] = animation.indices;
+                    const heightI = arrayBars[i].style.height;
+                    const heightJ = arrayBars[j].style.height;
+                    
+                    // Highlight swapping elements
+                    arrayBars[i].classList.add('swapping');
+                    arrayBars[j].classList.add('swapping');
+                    
+                    // Swap values in display
+                    arrayBars[i].style.height = heightJ;
+                    arrayBars[j].style.height = heightI;
+                    
+                    // Swap value labels
+                    const valueI = arrayBars[i].querySelector('.array-bar.value').textContent;
+                    const valueJ = arrayBars[j].querySelector('.array-bar.value').textContent;
+                    arrayBars[i].querySelector('.array-bar.value').textContent = valueJ;
+                    arrayBars[j].querySelector('.array-bar.value').textContent = valueI;
+                    
+                    timeoutId = setTimeout(() => {
+                        arrayBars[i].classList.remove('swapping');
+                        arrayBars[j].classList.remove('swapping');
+                        animation.resolve();
+                        animationQueue.shift();
+                        processAnimationQueue();
+                    }, animationSpeed * 2);
+                    break;
+                    
+                case 'sorted':
+                    // Mark element as sorted
+                    arrayBars[animation.index].classList.add('sorted');
+                    timeoutId = setTimeout(() => {
+                        animation.resolve();
+                        animationQueue.shift();
+                        processAnimationQueue();
+                    }, animationSpeed / 2);
+                    break;
+            }
+        }
+        
+        // Set up event listeners
+        document.getElementById('speed').addEventListener('input', function() {
+            animationSpeed = 101 - this.value; // Invert so higher value = faster
+        });
+        
+        document.getElementById('size').addEventListener('input', function() {
+            if (!isSorting) {
+                generateNewArray();
+            }
+        });
+        
+        // Initialize
+        generateNewArray();
+    </script>
+</body>
+</html>

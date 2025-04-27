@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Linked List Visualization</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-hover: #2980b9;
+            --success: #2ecc71;
+            --success-hover: #27ae60;
+            --danger: #e74c3c;
+            --danger-hover: #c0392b;
+            --warning: #f39c12;
+            --warning-hover: #e67e22;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --text: #333;
+            --border: #bdc3c7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 2px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            padding: 10px 15px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button i {
+            font-size: 16px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: var(--success-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background-color: var(--warning-hover);
+        }
+
+        .linked-list-container {
+            width: 100%;
+            min-height: 200px;
+            margin: 30px 0;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            border: 1px dashed var(--border);
+        }
+
+        .linked-list {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            padding: 20px 0;
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            margin: 0 2px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .node-value {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            background-color: var(--success);
+            color: white;
+            border-radius: 8px 0 0 8px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .node-pointer {
+            width: 40px;
+            height: 60px;
+            background-color: var(--primary);
+            position: relative;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .node-pointer::after {
+            content: "→";
+            position: absolute;
+            color: white;
+            font-size: 24px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .node-pointer.null::after {
+            content: "Ø";
+            color: white;
+            font-weight: bold;
+        }
+
+        .node.highlight .node-value {
+            background-color: var(--danger);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+            transform: scale(1.1);
+        }
+
+        .node.highlight .node-pointer {
+            background-color: var(--danger);
+            transform: scale(1.1);
+        }
+
+        .node.operation-target .node-value {
+            background-color: var(--warning);
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
+        }
+
+        .node.operation-target .node-pointer {
+            background-color: var(--warning);
+        }
+
+        .empty-message {
+            color: var(--border);
+            font-size: 18px;
+            font-style: italic;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 10px;
+        }
+
+        .info-card {
+            flex: 1;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 0 10px;
+            text-align: center;
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: var(--dark);
+            font-size: 16px;
+        }
+
+        .info-card p {
+            margin-bottom: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .operation-log {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: var(--border);
+            margin-right: 10px;
+        }
+
+        .log-message {
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-panel {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .info-card {
+                margin: 0;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Linked List Visualization</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="nodeValue">Node Value</label>
+                <input type="number" id="nodeValue" placeholder="Enter value">
+            </div>
+            
+            <div class="control-group">
+                <label for="position">Position (0-based)</label>
+                <input type="number" id="position" placeholder="Position">
+            </div>
+            
+            <button class="btn-success" onclick="insertAtHead()">
+                <i class="fas fa-plus-circle"></i> Insert at Head
+            </button>
+            
+            <button class="btn-success" onclick="insertAtTail()">
+                <i class="fas fa-plus-circle"></i> Insert at Tail
+            </button>
+            
+            <button class="btn-success" onclick="insertAtPosition()">
+                <i class="fas fa-plus-circle"></i> Insert at Position
+            </button>
+            
+            <button class="btn-danger" onclick="deleteHead()">
+                <i class="fas fa-trash-alt"></i> Delete Head
+            </button>
+            
+            <button class="btn-danger" onclick="deleteTail()">
+                <i class="fas fa-trash-alt"></i> Delete Tail
+            </button>
+            
+            <button class="btn-danger" onclick="deleteAtPosition()">
+                <i class="fas fa-trash-alt"></i> Delete at Position
+            </button>
+            
+            <button class="btn-primary" onclick="findNode()">
+                <i class="fas fa-search"></i> Find Value
+            </button>
+            
+            <button class="btn-warning" onclick="clearList()">
+                <i class="fas fa-broom"></i> Clear List
+            </button>
+            
+            <button class="btn-primary" onclick="generateRandomList()">
+                <i class="fas fa-random"></i> Random List
+            </button>
+        </div>
+        
+        <div class="linked-list-container">
+            <div id="linkedList" class="linked-list">
+                <p class="empty-message">List is empty</p>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-card">
+                <h3>List Length</h3>
+                <p id="listLength">0</p>
+            </div>
+            <div class="info-card">
+                <h3>Head Value</h3>
+                <p id="headValue">None</p>
+            </div>
+            <div class="info-card">
+                <h3>Tail Value</h3>
+                <p id="tailValue">None</p>
+            </div>
+        </div>
+        
+        <div class="operation-log" id="operationLog">
+            <div class="log-entry">
+                <span class="log-time">[System]</span>
+                <span class="log-message">Linked list visualization ready</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ListNode {
+            constructor(value) {
+                this.value = value;
+                this.next = null;
+                this.id = Date.now() + Math.random().toString(36).substr(2, 9);
+            }
+        }
+
+        class LinkedList {
+            constructor() {
+                this.head = null;
+                this.tail = null;
+                this.length = 0;
+                this.operationLog = [];
+            }
+            
+            logOperation(message) {
+                const now = new Date();
+                const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+                this.operationLog.push({ time: timeString, message });
+                this.updateLog();
+            }
+            
+            updateLog() {
+                const logContainer = document.getElementById('operationLog');
+                logContainer.innerHTML = '';
+                
+                // Show last 10 operations
+                const recentLogs = this.operationLog.slice(-10);
+                
+                recentLogs.forEach(entry => {
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerHTML = `
+                        <span class="log-time">${entry.time}</span>
+                        <span class="log-message">${entry.message}</span>
+                    `;
+                    logContainer.appendChild(logEntry);
+                });
+                
+                // Auto-scroll to bottom
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+            
+            // Insert at head (beginning) of list
+            insertAtHead(value) {
+                const newNode = new ListNode(value);
+                
+                if (!this.head) {
+                    this.head = newNode;
+                    this.tail = newNode;
+                    this.logOperation(`Created new list with head value: ${value}`);
+                } else {
+                    newNode.next = this.head;
+                    this.head = newNode;
+                    this.logOperation(`Inserted ${value} at head (before ${newNode.next.value})`);
+                }
+                
+                this.length++;
+                this.updateVisualization();
+                return true;
+            }
+            
+            // Insert at tail (end) of list
+            insertAtTail(value) {
+                const newNode = new ListNode(value);
+                
+                if (!this.head) {
+                    this.head = newNode;
+                    this.tail = newNode;
+                    this.logOperation(`Created new list with head value: ${value}`);
+                } else {
+                    this.tail.next = newNode;
+                    this.tail = newNode;
+                    this.logOperation(`Inserted ${value} at tail (after ${this.getBeforeTail()?.value || 'head'})`);
+                }
+                
+                this.length++;
+                this.updateVisualization();
+                return true;
+            }
+            
+            // Helper to get node before tail
+            getBeforeTail() {
+                if (!this.head || this.head === this.tail) return null;
+                
+                let current = this.head;
+                while (current.next !== this.tail) {
+                    current = current.next;
+                }
+                return current;
+            }
+            
+            // Insert at specific position (0-based index)
+            insertAtPosition(value, position) {
+                if (position < 0 || position > this.length) {
+                    this.logOperation(`Failed to insert: Invalid position ${position}`);
+                    return false;
+                }
+                
+                if (position === 0) {
+                    return this.insertAtHead(value);
+                }
+                
+                if (position === this.length) {
+                    return this.insertAtTail(value);
+                }
+                
+                const newNode = new ListNode(value);
+                let current = this.head;
+                let previous = null;
+                let index = 0;
+                
+                while (index < position) {
+                    previous = current;
+                    current = current.next;
+                    index++;
+                }
+                
+                previous.next = newNode;
+                newNode.next = current;
+                this.length++;
+                
+                this.logOperation(`Inserted ${value} at position ${position} (between ${previous.value} and ${current.value})`);
+                this.updateVisualization();
+                return true;
+            }
+            
+            // Delete head node
+            deleteHead() {
+                if (!this.head) {
+                    this.logOperation("Failed to delete: List is empty");
+                    return null;
+                }
+                
+                const deletedValue = this.head.value;
+                this.head = this.head.next;
+                this.length--;
+                
+                if (this.length === 0) {
+                    this.tail = null;
+                    this.logOperation(`Deleted last node (value: ${deletedValue})`);
+                } else {
+                    this.logOperation(`Deleted head node (value: ${deletedValue}, new head: ${this.head.value})`);
+                }
+                
+                this.updateVisualization();
+                return deletedValue;
+            }
+            
+            // Delete tail node
+            deleteTail() {
+                if (!this.head) {
+                    this.logOperation("Failed to delete: List is empty");
+                    return null;
+                }
+                
+                if (this.length === 1) {
+                    return this.deleteHead();
+                }
+                
+                let current = this.head;
+                let previous = null;
+                
+                while (current.next) {
+                    previous = current;
+                    current = current.next;
+                }
+                
+                const deletedValue = current.value;
+                previous.next = null;
+                this.tail = previous;
+                this.length--;
+                
+                this.logOperation(`Deleted tail node (value: ${deletedValue}, new tail: ${this.tail.value})`);
+                this.updateVisualization();
+                return deletedValue;
+            }
+            
+            // Delete node at specific position
+            deleteAtPosition(position) {
+                if (position < 0 || position >= this.length) {
+                    this.logOperation(`Failed to delete: Invalid position ${position}`);
+                    return null;
+                }
+                
+                if (position === 0) {
+                    return this.deleteHead();
+                }
+                
+                if (position === this.length - 1) {
+                    return this.deleteTail();
+                }
+                
+                let current = this.head;
+                let previous = null;
+                let index = 0;
+                
+                while (index < position) {
+                    previous = current;
+                    current = current.next;
+                    index++;
+                }
+                
+                const deletedValue = current.value;
+                previous.next = current.next;
+                this.length--;
+                
+                this.logOperation(`Deleted node at position ${position} (value: ${deletedValue}, between ${previous.value} and ${current.next.value})`);
+                this.updateVisualization();
+                return deletedValue;
+            }
+            
+            // Find node with specific value
+            find(value) {
+                let current = this.head;
+                let position = 0;
+                
+                while (current) {
+                    if (current.value === value) {
+                        this.highlightNode(current.id);
+                        setTimeout(() => {
+                            this.removeHighlight(current.id);
+                        }, 2000);
+                        
+                        this.logOperation(`Found value ${value} at position ${position}`);
+                        return position;
+                    }
+                    current = current.next;
+                    position++;
+                }
+                
+                this.logOperation(`Value ${value} not found in list`);
+                return -1;
+            }
+            
+            // Clear the entire list
+            clear() {
+                this.head = null;
+                this.tail = null;
+                this.length = 0;
+                this.logOperation("Cleared the entire list");
+                this.updateVisualization();
+            }
+            
+            // Generate random list
+            generateRandomList(count = 5) {
+                this.clear();
+                const min = 10;
+                const max = 99;
+                
+                for (let i = 0; i < count; i++) {
+                    const value = Math.floor(Math.random() * (max - min + 1)) + min;
+                    this.insertAtTail(value);
+                }
+                
+                this.logOperation(`Generated random list with ${count} nodes`);
+            }
+            
+            // Highlight a specific node
+            highlightNode(nodeId) {
+                const nodes = document.querySelectorAll('.node');
+                nodes.forEach(node => {
+                    if (node.getAttribute('data-node-id') === nodeId) {
+                        node.classList.add('highlight');
+                    }
+                });
+            }
+            
+            // Remove highlight from a node
+            removeHighlight(nodeId) {
+                const nodes = document.querySelectorAll('.node');
+                nodes.forEach(node => {
+                    if (node.getAttribute('data-node-id') === nodeId) {
+                        node.classList.remove('highlight');
+                    }
+                });
+            }
+            
+            // Mark node as operation target
+            markOperationTarget(nodeId) {
+                const nodes = document.querySelectorAll('.node');
+                nodes.forEach(node => {
+                    if (node.getAttribute('data-node-id') === nodeId) {
+                        node.classList.add('operation-target');
+                    }
+                });
+            }
+            
+            // Remove operation target mark
+            removeOperationTarget(nodeId) {
+                const nodes = document.querySelectorAll('.node');
+                nodes.forEach(node => {
+                    if (node.getAttribute('data-node-id') === nodeId) {
+                        node.classList.remove('operation-target');
+                    }
+                });
+            }
+            
+            // Update the visualization
+            updateVisualization() {
+                const listContainer = document.getElementById('linkedList');
+                listContainer.innerHTML = '';
+                
+                document.getElementById('listLength').textContent = this.length;
+                document.getElementById('headValue').textContent = this.head ? this.head.value : 'None';
+                document.getElementById('tailValue').textContent = this.tail ? this.tail.value : 'None';
+                
+                if (this.length === 0) {
+                    const emptyMsg = document.createElement('p');
+                    emptyMsg.className = 'empty-message';
+                    emptyMsg.textContent = 'List is empty';
+                    listContainer.appendChild(emptyMsg);
+                    return;
+                }
+                
+                let current = this.head;
+                let isFirst = true;
+                
+                while (current) {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = `node ${isFirst ? 'slide-in' : 'fade-in'}`;
+                    nodeElement.setAttribute('data-node-id', current.id);
+                    
+                    const valueElement = document.createElement('div');
+                    valueElement.className = 'node-value';
+                    valueElement.textContent = current.value;
+                    
+                    const pointerElement = document.createElement('div');
+                    pointerElement.className = 'node-pointer';
+                    if (current.next === null) {
+                        pointerElement.classList.add('null');
+                    }
+                    
+                    nodeElement.appendChild(valueElement);
+                    nodeElement.appendChild(pointerElement);
+                    listContainer.appendChild(nodeElement);
+                    
+                    // Add arrow between nodes (except last)
+                    if (current.next) {
+                        const arrow = document.createElement('div');
+                        arrow.innerHTML = '<i class="fas fa-arrow-right" style="color: #bdc3c7; margin: 0 5px;"></i>';
+                        listContainer.appendChild(arrow);
+                    }
+                    
+                    current = current.next;
+                    isFirst = false;
+                }
+            }
+        }
+
+        const linkedList = new LinkedList();
+
+        // Helper function to get input value
+        function getInputValue() {
+            const value = parseInt(document.getElementById('nodeValue').value);
+            if (isNaN(value)) {
+                linkedList.logOperation("Invalid input: Please enter a valid number");
+                return null;
+            }
+            return value;
+        }
+
+        // Helper function to get position value
+        function getPositionValue() {
+            const position = parseInt(document.getElementById('position').value);
+            if (isNaN(position)) {
+                linkedList.logOperation("Invalid input: Please enter a valid position");
+                return null;
+            }
+            return position;
+        }
+
+        // Operation functions
+        function insertAtHead() {
+            const value = getInputValue();
+            if (value !== null) {
+                linkedList.insertAtHead(value);
+                document.getElementById('nodeValue').value = '';
+            }
+        }
+
+        function insertAtTail() {
+            const value = getInputValue();
+            if (value !== null) {
+                linkedList.insertAtTail(value);
+                document.getElementById('nodeValue').value = '';
+            }
+        }
+
+        function insertAtPosition() {
+            const value = getInputValue();
+            const position = getPositionValue();
+            if (value !== null && position !== null) {
+                linkedList.insertAtPosition(value, position);
+                document.getElementById('nodeValue').value = '';
+                document.getElementById('position').value = '';
+            }
+        }
+
+        function deleteHead() {
+            linkedList.deleteHead();
+        }
+
+        function deleteTail() {
+            linkedList.deleteTail();
+        }
+
+        function deleteAtPosition() {
+            const position = getPositionValue();
+            if (position !== null) {
+                linkedList.deleteAtPosition(position);
+                document.getElementById('position').value = '';
+            }
+        }
+
+        function findNode() {
+            const value = getInputValue();
+            if (value !== null) {
+                linkedList.find(value);
+                document.getElementById('nodeValue').value = '';
+            }
+        }
+
+        function clearList() {
+            linkedList.clear();
+        }
+
+        function generateRandomList() {
+            linkedList.generateRandomList(5 + Math.floor(Math.random() * 6)); // 5-10 nodes
+        }
+
+        // Initialize with sample list
+        linkedList.insertAtHead(30);
+        linkedList.insertAtHead(20);
+        linkedList.insertAtHead(10);
+        linkedList.insertAtTail(40);
+        linkedList.insertAtTail(50);
+        linkedList.logOperation("Sample list initialized with values 10, 20, 30, 40, 50");
+    </script>
+</body>
+</html>
